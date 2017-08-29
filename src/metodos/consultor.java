@@ -476,7 +476,7 @@ return false;
   String split[]=rut.split("-");
     
      try{
-            String strSql="insert into contactos (rut,dv,nombre, telefonos,direccion) VALUES ("+Integer.parseInt(split[0])+","+Integer.parseInt(split[1])+",'"+nombre.trim()+"','"+telefonos.trim()+"','"+direccion+"') ON DUPLICATE KEY UPDATE  nombre='"+nombre+"', telefonos='"+telefonos+"', direccion='"+direccion+"'";
+            String strSql="insert into contactos (rut,dv,nombre, telefonos,direccion) VALUES ("+Integer.parseInt(split[0])+","+Integer.parseInt(split[1])+",'"+nombre+"','"+telefonos+"','"+direccion+"') ON DUPLICATE KEY UPDATE  nombre='"+nombre+"', telefonos='"+telefonos+"', direccion='"+direccion+"'";
             conexion.conectar();
             conexion.sentencia = conexion.conn.prepareStatement(strSql);
             conexion.sentencia.execute(strSql);

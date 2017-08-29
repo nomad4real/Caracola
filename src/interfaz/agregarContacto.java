@@ -23,6 +23,7 @@ public class agregarContacto extends javax.swing.JFrame {
      */
     public agregarContacto() {
         initComponents();
+    
         WindowListener exitListener = new WindowAdapter() {
             
             @Override
@@ -35,9 +36,9 @@ public class agregarContacto extends javax.swing.JFrame {
                 //         System.exit(0);
                 /////      }
              
-                     new misCobranzas().setVisible(true);
-                e.getWindow().dispose();
-                
+              //       new misCobranzas().setVisible(true);
+          //      e.getWindow().dispose();
+           
              
                 
                  
@@ -60,7 +61,8 @@ public class agregarContacto extends javax.swing.JFrame {
             Object object[]=x.buscarPorId(misCobranzas.idCobranza);
             this.jtxt_rut.setText(object[3].toString()+"-"+object[4].toString());
             this.jtxt_nombre.setText(object[2].toString());
-           
+            this.jtxt_direccion.setText(object[5].toString());
+             this.jtxt_telefonos.setText(object[6].toString());
    
         }else{
             
@@ -209,24 +211,22 @@ public class agregarContacto extends javax.swing.JFrame {
       if(this.jtxt_nombre.getText().isEmpty()||this.jtxt_rut.getText().isEmpty()){
       JOptionPane.showMessageDialog(rootPane, "Debe completar Obligatoriamente el nombre y el rut");
       }else{
-          
-        String telefonos="Sin Datos";
-        String direccion="Sin Datos";      
+      
         String nombre=this.jtxt_nombre.getText();
         String rut=this.jtxt_rut.getText();
-        if(!this.jtxt_telefonos.getText().isEmpty()){
-        telefonos=this.jtxt_telefonos.getText();
-        }
-        if(!this.jtxt_direccion.getText().isEmpty()){
-        telefonos=this.jtxt_direccion.getText();
-        }
+
+        String telefonos=this.jtxt_telefonos.getText();
+
+        String direccion=this.jtxt_direccion.getText();
+
         consultor x =new consultor();
         
         //validar rut;
         if(x.validarRut(rut)){
             x.agregarContactos(rut,nombre,telefonos,direccion);
-            new misCobranzas().setVisible(true);
+          
             this.dispose();
+               new verPolizas().setVisible(true);
         }else{
             JOptionPane.showMessageDialog(rootPane, "El rut Ingresado no es Valido");
     
