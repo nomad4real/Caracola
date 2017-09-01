@@ -29,6 +29,7 @@ import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import javax.swing.ButtonModel;
@@ -969,6 +970,55 @@ if(file!=null){
         
         return directorio;
    }
+
+    public ArrayList<String> buscarNumPolizaxContacto(String toString) {
+      ArrayList<String> itemPolizas= new ArrayList();
+           try{
+          
+          //debe haber un sql que haga todo de aca, pero me da paja buscarlo
+            String sql="SELECT a.poliza FROM caracola.cobranzas a, caracola.contactos b where b.rut=a.fk_idContacto GROUP BY(a.poliza)";
+            conexion.conectar();
+            conexion.sentencia = conexion.conn.prepareStatement(sql);
+            ResultSet objSet=conexion.sentencia.executeQuery(sql);
+            
+                   while(objSet.next()){
+              itemPolizas.add(objSet.getObject(1).toString());
+                   }
+    
+    
+           }catch(SQLException ex){
+            System.out.println("Error consulta polizas por nombre"+ex);
+           }
+           
+return itemPolizas;
+        
+     }
+
+    public Object[] buscarPorPoliza(long numPoliza) {
+     
+   Object [] fila=new Object [17];
+           try{
+          
+          //debe haber un sql que haga todo de aca, pero me da paja buscarlo
+            String sql="SELECT a.id,a.ramo,b.nombre,b.rut,b.dv,b.direccion,b.telefonos,a.poliza,a.item,a.tipoDoc,a.cuota,a.maxCuota,a.monto,a.moneda,a.fecha_vencimiento,a.company,a.estado,a.obs FROM caracola.cobranzas a, caracola.contactos b where a.poliza="+numPoliza+" and b.rut=a.fk_idContacto";
+            conexion.conectar();
+            conexion.sentencia = conexion.conn.prepareStatement(sql);
+            ResultSet objSet=conexion.sentencia.executeQuery(sql);
+            
+                   while(objSet.next()){
+                for (int i = 0; i < 17; i++) {
+                    fila[i]=objSet.getObject(i+1);
+                     if(i==10){ }}
+                   }
+    
+    
+           }catch(SQLException ex){
+            System.out.println("Error consultar por id"+ex);
+           }
+           
+return fila;
+
+    }
 
  
     
