@@ -275,6 +275,7 @@ public static long numPoliza=0;
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Mis Cobranzas");
+        setAlwaysOnTop(true);
         setAutoRequestFocus(false);
 
         jlbl_fecha.setFont(new java.awt.Font("Eurostile LT Std", 3, 24)); // NOI18N

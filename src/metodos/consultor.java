@@ -653,7 +653,7 @@ ImageIcon icon= new ImageIcon("");
            try{
           
           //debe haber un sql que haga todo de aca, pero me da paja buscarlo
-            String sql="SELECT a.id,a.ramo,b.nombre,a.poliza,a.item,a.tipoDoc,a.cuota,a.maxCuota,a.monto,a.moneda,a.fecha_vencimiento,a.company,a.estado,a.obs,a.transferencia FROM caracola.cobranzas a, caracola.contactos b where a.fk_idContacto=b.rut order by fecha_vencimiento ASC";
+            String sql="SELECT a.id,a.ramo,b.nombre,a.poliza,a.item,a.tipoDoc,a.cuota,a.maxCuota,a.monto,a.moneda,a.fecha_vencimiento,a.company,a.estado,a.obs,a.transferencia FROM caracola.cobranzas a, caracola.contactos b where a.fk_idContacto=b.rut group by a.poliza";
             conexion.conectar();
             conexion.sentencia = conexion.conn.prepareStatement(sql);
             ResultSet objSet=conexion.sentencia.executeQuery(sql);
@@ -685,12 +685,12 @@ ImageIcon icon= new ImageIcon("");
                                 case 2:fila[i]="REHABILITACIÓN";break;
                             }
                             ;break;
-                    //    case 11:
-                    //        switch((int)fila[i]){
-                   //             case 0:fila[i]="HDI";break;
-                   //             case 1:fila[i]="Liberty";break;
-                   //             case 2:fila[i]="SURA";break;
-                  //          } ;break;
+                        case 11:
+                            switch((int)fila[i]){
+                                case 0:fila[i]="HDI";break;
+                                case 1:fila[i]="Liberty";break;
+                                case 2:fila[i]="SURA";break;
+                            } ;break;
                         case 12:
               
                             switch((int) fila[i]){
@@ -1020,11 +1020,49 @@ return fila;
 
     }
 
+    public void insertarObservacionPoliza(long poliza, String observacion) {
+     
+
  
-    
+     try{
+            String sql="INSERT INTO observaciones_poliza value ("+poliza+",'"+observacion+"')";
+            conexion.conectar();
+            conexion.sentencia = conexion.conn.prepareStatement(sql);
+            conexion.sentencia.execute(sql);
+            conexion.desconectar();
+       
+            
+        } catch (Exception ex) {
+            System.out.println("Error AL AGREGAR OBSERVACION");
+            System.out.println(ex);
+        }
    
 
+    }
 
+    public String buscarObservacionPorPoliza(long numPoliza) {
+        Object [] fila=new Object [1];
+        fila[0]="Sin Observaciones";
+           try{         
+            String sql="SELECT b.observaciones FROM caracola.cobranzas a, caracola.observaciones_poliza b where a.poliza="+numPoliza+" and b.numero_poliza="+numPoliza+"";
+            conexion.conectar();
+            conexion.sentencia = conexion.conn.prepareStatement(sql);
+            ResultSet objSet=conexion.sentencia.executeQuery(sql);
+            
+                   while(objSet.next()){
+                for (int i = 0; i < 17; i++) {
+                    fila[i]=objSet.getObject(i+1);
+                   }
+                   }
+    
+    
+           }catch(SQLException ex){
+            System.out.println("Error consultar por id"+ex);
+           }
+           
+return fila[0].toString();
+        
+    }
 }
 
 

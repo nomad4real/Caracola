@@ -224,9 +224,9 @@ public class agregarContacto extends javax.swing.JFrame {
         //validar rut;
         if(x.validarRut(rut)){
             x.agregarContactos(rut,nombre,telefonos,direccion);
-          
+
             this.dispose();
-               new verPolizas().setVisible(true);
+               new misCobranzas().setVisible(true);
         }else{
             JOptionPane.showMessageDialog(rootPane, "El rut Ingresado no es Valido");
     
