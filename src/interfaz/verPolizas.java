@@ -71,23 +71,7 @@ public class verPolizas extends javax.swing.JFrame {
         
         initComponents();
         this.tabla.setModel(x.buscarTablaPoliza((DefaultTableModel) this.tabla.getModel(), numPoliza));
-              WindowListener exitListener = new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                //     int confirm = JOptionPane.showOptionDialog(
-                //        null, "Are You Sure to Close Application?",
-                //         "Exit Confirmation", JOptionPane.YES_NO_OPTION,
-                //           JOptionPane.QUESTION_MESSAGE, null, null, null);
-                //     if (confirm == 0) {
-                //         System.exit(0);
-                /////      }
-                new misCobranzas().setVisible(true);
-                e.getWindow().dispose();
-                
-                
-                
-            }
-        };this.addWindowListener(exitListener);
+       
 
         
         //se centra la clase
@@ -114,7 +98,7 @@ public class verPolizas extends javax.swing.JFrame {
         Object[] r = x.buscarPorPoliza(numPoliza);// hay que cambiar la busqueda por poliza o copiar el metodo 
 //se cargan los datos de la poliza
 this.jtxt_numPoliza.setText(String.valueOf(r[2]));
-this.jtxt_cuota_pendiente.setText(String.valueOf(r[6]));
+
 this.jtxt_rut.setText(r[3].toString()+"-"+r[4].toString());
 this.jtxt_nombre.setText(r[2].toString());
 this.jlbl_telefonos.setText(r[5].toString());
@@ -152,15 +136,15 @@ int l=Days.daysBetween(today, fechaVenc).getDays();
         //se crean los colores
          PatternPredicate patternPredicate = new PatternPredicate("Pendiente", 9);//condicion pendiente
         ColorHighlighter red = new ColorHighlighter(patternPredicate, Color.RED,
-                Color.WHITE, null, Color.WHITE);//fin rojo
+                Color.WHITE, null, Color.BLUE);//fin rojo
         patternPredicate = new PatternPredicate("Ingresado", 9);//condicion Ingresado
         ColorHighlighter verde = new ColorHighlighter(patternPredicate, Color.GREEN,
-                null, null, null);//fin verde
+                null, null, Color.BLUE);//fin verde
         patternPredicate = new PatternPredicate("Cobrado", 9);  //condicion Cobrado
         ColorHighlighter amarillo = new ColorHighlighter(patternPredicate, Color.ORANGE,
                 null,//color no seleccionado
                 null,
-                Color.ORANGE);//color seleccionado
+                Color.BLUE);//color seleccionado
         //fin crear colores
         //font higltheger
       //  FontHighlighter black= new FontHighlighter(patternPredicate);
@@ -173,14 +157,18 @@ int l=Days.daysBetween(today, fechaVenc).getDays();
        // tabla.addHighlighter(black);
         //fin setear en tabla
      //se juntan todas las fechas en un array (dejar aparte otra clase)
-    final ArrayList<String> listadoPendientes= new ArrayList();
+    final ArrayList<String[]> listadoPendientes= new ArrayList();
     final ArrayList<String> listadoCobrados= new ArrayList();
     final ArrayList<String> listadoIngresados= new ArrayList();
-    for(int i=0;i<tabla.getRowCount();i++){
+    for(int i=0;i<tabla.getRowCount();i++){//this.jtxt_cuota_pendiente.setText(String.valueOf(r[6]));
         if(tabla.getValueAt(i, 9).equals("Pendiente")){
-            
-            listadoPendientes.add(tabla.getValueAt(i, 8).toString());//fechas Pendientes
-            
+            String[] fecha_cuota = new String[2];
+             fecha_cuota[0]=tabla.getValueAt(i, 8).toString();
+             fecha_cuota[1]=tabla.getValueAt(i, 4).toString();
+            listadoPendientes.add(fecha_cuota);//fechas Pendientes
+            if(i==0){
+          
+            }
             
         }else{//si no hay pendiente entonces se comprueba por Cobrado
             if(tabla.getValueAt(i, 9).equals("Cobrado")){
@@ -198,6 +186,25 @@ int l=Days.daysBetween(today, fechaVenc).getDays();
 
 
 }
+    
+    //Listeners
+           WindowListener exitListener = new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                //     int confirm = JOptionPane.showOptionDialog(
+                //        null, "Are You Sure to Close Application?",
+                //         "Exit Confirmation", JOptionPane.YES_NO_OPTION,
+                //           JOptionPane.QUESTION_MESSAGE, null, null, null);
+                //     if (confirm == 0) {
+                //         System.exit(0);
+                /////      }
+                new misCobranzas().setVisible(true);
+                e.getWindow().dispose();
+                
+                
+                
+            }
+        };this.addWindowListener(exitListener);
           tabla.getModel().addTableModelListener(new TableModelListener() {
 //se añade listener para cuando se edita la tabla
             
@@ -290,12 +297,19 @@ if(!(listadoIngresados.isEmpty())){////si  esta al dia no se eliminan defaults
      this.jtxt_maxCuotas.setText("");
 }else{
     if(!(listadoCobrados.isEmpty())){
-    this.jlbl_fechaPendiente.setText(listadoPendientes.get(0));
+       if(!(listadoPendientes.isEmpty())){
+         this.jlbl_fechaPendiente.setText(listadoPendientes.get(0)[0]);//se pone la primera cuota pendiente
+
+        this.jtxt_cuota_pendiente.setText(listadoPendientes.get(0)[1]);//se pone la primera cuota pendiente
+       }
+    ;
     }else{
 
     if(!(listadoPendientes.isEmpty())){
-       this.jlbl_fechaPendiente.setText(listadoPendientes.get(0));//se pone la primera cuota pendiente
-      
+       this.jlbl_fechaPendiente.setText(listadoPendientes.get(0)[0]);//se pone la primera cuota pendiente
+
+        this.jtxt_cuota_pendiente.setText(listadoPendientes.get(0)[1]);//se pone la primera cuota pendiente
+
     }else{      
  
     }
@@ -346,7 +360,7 @@ if(!fa.isBeforeNow()){
 
  jlbl_vigencia.setText("Posible Anulacion");
  jlbl_vigencia.setForeground(Color.ORANGE);
- jlbl_red.setText("La cuota siguiente tiene un atraso de"+hoy.dayOfYear().getDifference(fa)*-1+" Dias.");
+ jlbl_red.setText("La cuota PENDIENTE tiene un atraso de"+hoy.dayOfYear().getDifference(fa)*-1+" Dias.");
 }else{
     this.jlbl_red.setText("La poliza vencio hace "+hoy.dayOfYear().getDifference(fa)+" dias.");
 }
@@ -432,6 +446,7 @@ this.setLayout(null);// se centra la ventana
         jbtn_editarObservaciones = new org.jdesktop.swingx.JXButton();
         jlbl_red = new javax.swing.JLabel();
         jlbl_amarillo = new javax.swing.JLabel();
+        jXButton2 = new org.jdesktop.swingx.JXButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("Ver Polizas");
@@ -444,9 +459,49 @@ this.setLayout(null);// se centra la ventana
             new String [] {
                 "id", "Poliza", "Item", "TipoDoc", "cuota", "Max Cuota", "monto", "moneda", "Fecha de Vencimiento", "Estado", "Observaciones"
             }
-        ));
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, true, false, true, false, false, true, true, true, false, true
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
         tabla.setFont(new java.awt.Font("Vectora LT Std Light", 0, 14)); // NOI18N
         jScrollPane1.setViewportView(tabla);
+        if (tabla.getColumnModel().getColumnCount() > 0) {
+            tabla.getColumnModel().getColumn(0).setMinWidth(1);
+            tabla.getColumnModel().getColumn(0).setPreferredWidth(1);
+            tabla.getColumnModel().getColumn(0).setMaxWidth(1);
+            tabla.getColumnModel().getColumn(1).setMinWidth(150);
+            tabla.getColumnModel().getColumn(1).setPreferredWidth(150);
+            tabla.getColumnModel().getColumn(1).setMaxWidth(150);
+            tabla.getColumnModel().getColumn(2).setMinWidth(50);
+            tabla.getColumnModel().getColumn(2).setPreferredWidth(50);
+            tabla.getColumnModel().getColumn(2).setMaxWidth(50);
+            tabla.getColumnModel().getColumn(3).setMinWidth(80);
+            tabla.getColumnModel().getColumn(3).setPreferredWidth(80);
+            tabla.getColumnModel().getColumn(3).setMaxWidth(80);
+            tabla.getColumnModel().getColumn(4).setMinWidth(50);
+            tabla.getColumnModel().getColumn(4).setPreferredWidth(50);
+            tabla.getColumnModel().getColumn(4).setMaxWidth(50);
+            tabla.getColumnModel().getColumn(5).setMinWidth(50);
+            tabla.getColumnModel().getColumn(5).setPreferredWidth(50);
+            tabla.getColumnModel().getColumn(5).setMaxWidth(50);
+            tabla.getColumnModel().getColumn(6).setMinWidth(100);
+            tabla.getColumnModel().getColumn(6).setPreferredWidth(100);
+            tabla.getColumnModel().getColumn(6).setMaxWidth(100);
+            tabla.getColumnModel().getColumn(7).setMinWidth(50);
+            tabla.getColumnModel().getColumn(7).setPreferredWidth(50);
+            tabla.getColumnModel().getColumn(7).setMaxWidth(50);
+            tabla.getColumnModel().getColumn(8).setMinWidth(90);
+            tabla.getColumnModel().getColumn(8).setPreferredWidth(90);
+            tabla.getColumnModel().getColumn(8).setMaxWidth(90);
+            tabla.getColumnModel().getColumn(9).setMinWidth(100);
+            tabla.getColumnModel().getColumn(9).setPreferredWidth(100);
+            tabla.getColumnModel().getColumn(9).setMaxWidth(100);
+        }
 
         jlbl_fechaHoy.setFont(new java.awt.Font("Bookman Old Style", 1, 12)); // NOI18N
         jlbl_fechaHoy.setText("25/12/2017");
@@ -878,6 +933,15 @@ this.setLayout(null);// se centra la ventana
         jlbl_amarillo.setText("Antecion!");
         jlbl_amarillo.setVerticalAlignment(javax.swing.SwingConstants.TOP);
 
+        jXButton2.setForeground(new java.awt.Color(0, 0, 102));
+        jXButton2.setText("Dejar todas Cobradas");
+        jXButton2.setFont(new java.awt.Font("Vectora LT Std Light", 0, 14)); // NOI18N
+        jXButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jXButton2ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -900,40 +964,40 @@ this.setLayout(null);// se centra la ventana
                             .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jXButton1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jXButton2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 413, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 79, Short.MAX_VALUE)
-                        .addComponent(jlbl_red, javax.swing.GroupLayout.PREFERRED_SIZE, 284, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(20, 20, 20))))
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jlbl_red, javax.swing.GroupLayout.PREFERRED_SIZE, 176, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(jlbl_amarillo, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jpanel_generarConMaxCuota, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                    .addContainerGap(1043, Short.MAX_VALUE)
-                    .addComponent(jlbl_amarillo, javax.swing.GroupLayout.PREFERRED_SIZE, 284, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGap(20, 20, 20)))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(jlbl_red, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(31, 31, 31))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
+                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addGroup(layout.createSequentialGroup()
+                            .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(jlbl_red, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jlbl_amarillo, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(jPanel3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -955,14 +1019,11 @@ this.setLayout(null);// se centra la ventana
                         .addGap(21, 21, 21))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jXButton1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(jXButton1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jXButton2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(35, 35, 35))))
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(layout.createSequentialGroup()
-                    .addGap(10, 10, 10)
-                    .addComponent(jlbl_amarillo, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(442, Short.MAX_VALUE)))
         );
 
         pack();
@@ -1035,6 +1096,10 @@ new agregarContacto().setVisible(true);
 JOptionPane.showConfirmDialog(jbtn_company, "Esta seguro que desea dejar esta poliza como pendiente?");        // TODO add your handling code here:
     }//GEN-LAST:event_jXButton1ActionPerformed
 
+    private void jXButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jXButton2ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jXButton2ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -1082,6 +1147,7 @@ JOptionPane.showConfirmDialog(jbtn_company, "Esta seguro que desea dejar esta po
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JSeparator jSeparator1;
     private org.jdesktop.swingx.JXButton jXButton1;
+    private org.jdesktop.swingx.JXButton jXButton2;
     private org.jdesktop.swingx.JXTextArea jarea_observaciones;
     private javax.swing.JButton jbtn_agregarMaxCuotas;
     private javax.swing.JButton jbtn_company;

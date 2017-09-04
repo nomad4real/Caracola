@@ -18,6 +18,7 @@ import metodos.validacion;
  */
 public class agregarContacto extends javax.swing.JFrame {
             consultor x= new consultor();
+            public static long contacto_creado=0;
     /**
      * Creates new form agregarContacto
      */
@@ -73,6 +74,7 @@ public class agregarContacto extends javax.swing.JFrame {
         
         this.setLocationRelativeTo(null);
         this.setLayout(null);
+       
     }
     
     /**
@@ -120,6 +122,11 @@ public class agregarContacto extends javax.swing.JFrame {
         });
 
         jtbn_cancelar.setText("Cancelar");
+        jtbn_cancelar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jtbn_cancelarActionPerformed(evt);
+            }
+        });
 
         jLabel4.setText("Telefonos :");
 
@@ -222,15 +229,23 @@ public class agregarContacto extends javax.swing.JFrame {
         consultor x =new consultor();
         
         //validar rut;
+  
         if(x.validarRut(rut)){
-            x.agregarContactos(rut,nombre,telefonos,direccion);
+                  if(x.buscarNombrePorRut(rut)!=0){
+          x.agregarContactos(rut,nombre,telefonos,direccion);
 
             this.dispose();
-               new misCobranzas().setVisible(true);
+       
+             new agregarCobranza().setVisible(true);
+                  }else{
+            JOptionPane.showConfirmDialog(rootPane, "El rut ya existe !!! si continua seran reemplazado los datos");
+        }
+   
         }else{
             JOptionPane.showMessageDialog(rootPane, "El rut Ingresado no es Valido");
     
         }
+        
       }
         
         
@@ -244,6 +259,10 @@ public class agregarContacto extends javax.swing.JFrame {
     private void jtxt_nombreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jtxt_nombreActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jtxt_nombreActionPerformed
+
+    private void jtbn_cancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jtbn_cancelarActionPerformed
+this.dispose();        // TODO add your handling code here:
+    }//GEN-LAST:event_jtbn_cancelarActionPerformed
     
     /**
      * @param args the command line arguments

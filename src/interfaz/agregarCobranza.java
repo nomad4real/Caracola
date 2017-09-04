@@ -146,6 +146,8 @@ this.jcombo_maxCuotas.setSelectedIndex(Integer.parseInt(fila[11].toString()));
     this.jcombo_contactos.setSelectedItem(this.jcombo_contactos.getItemAt(this.jcombo_contactos.getItemCount()-1));
     this.jtxt_rut.setText(rut);
     
+    
+    
     }
     
     
@@ -188,7 +190,7 @@ this.jcombo_maxCuotas.setSelectedIndex(Integer.parseInt(fila[11].toString()));
         jpane_poliza5 = new javax.swing.JPanel();
         jtxt_item = new javax.swing.JTextField();
         jcombo_contactos = new javax.swing.JComboBox<>();
-        jButton3 = new javax.swing.JButton();
+        jbtn_agregar_contacto = new javax.swing.JButton();
         jtxt_rut = new javax.swing.JTextField();
         jScrollPane1 = new javax.swing.JScrollPane();
         jtxtArea_observacion_poliza = new org.jdesktop.swingx.JXTextArea();
@@ -458,10 +460,10 @@ this.jcombo_maxCuotas.setSelectedIndex(Integer.parseInt(fila[11].toString()));
             }
         });
 
-        jButton3.setIcon(new javax.swing.ImageIcon("C:\\madremia\\PRogramaLiberty\\descarga\\plus.png")); // NOI18N
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
+        jbtn_agregar_contacto.setIcon(new javax.swing.ImageIcon("C:\\madremia\\PRogramaLiberty\\descarga\\plus.png")); // NOI18N
+        jbtn_agregar_contacto.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
+                jbtn_agregar_contactoActionPerformed(evt);
             }
         });
 
@@ -489,7 +491,7 @@ this.jcombo_maxCuotas.setSelectedIndex(Integer.parseInt(fila[11].toString()));
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(jcombo_contactos, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jbtn_agregar_contacto, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(21, 21, 21))
                             .addComponent(jpane_ramo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
@@ -529,7 +531,7 @@ this.jcombo_maxCuotas.setSelectedIndex(Integer.parseInt(fila[11].toString()));
                         .addComponent(jLabel2)
                         .addComponent(jLabel3)
                         .addComponent(jtxt_rut, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jButton3)
+                    .addComponent(jbtn_agregar_contacto)
                     .addComponent(jcombo_contactos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(16, 16, 16)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
@@ -550,8 +552,8 @@ this.jcombo_maxCuotas.setSelectedIndex(Integer.parseInt(fila[11].toString()));
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jpane_poliza2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(22, 22, 22)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jbtn_add)
                     .addComponent(jButton2))
@@ -611,6 +613,8 @@ if(modCuotas==0.0){//si mod cuotas es igual a zero entonces todas las cuotas son
     
     
 }
+
+
 new misCobranzas().setVisible(true);
 this.dispose();
 
@@ -682,10 +686,12 @@ rutSeleccionado = Integer.parseInt(parts[0]); // 004
         // TODO add your handling code here:
     }//GEN-LAST:event_jcombo_contactosItemStateChanged
 
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-new agregarContacto().setVisible(true);    
-this.dispose();// TODO add your handling code here:
-    }//GEN-LAST:event_jButton3ActionPerformed
+    private void jbtn_agregar_contactoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtn_agregar_contactoActionPerformed
+             agregarContacto.contacto_creado=1;
+        new agregarContacto().setVisible(true);    
+this.dispose();
+//this.dispose();// TODO add your handling code here:
+    }//GEN-LAST:event_jbtn_agregar_contactoActionPerformed
 
     /**
      * @param args the command line arguments
@@ -724,7 +730,6 @@ this.dispose();// TODO add your handling code here:
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel2;
@@ -734,6 +739,7 @@ this.dispose();// TODO add your handling code here:
     private javax.swing.JScrollPane jScrollPane1;
     private org.jdesktop.swingx.JXDatePicker jXDatePicker1;
     private javax.swing.JButton jbtn_add;
+    private javax.swing.JButton jbtn_agregar_contacto;
     private javax.swing.JComboBox<String> jcombo_contactos;
     private javax.swing.JComboBox<String> jcombo_maxCuotas;
     private javax.swing.JComboBox<String> jcombo_moneda;

@@ -46,9 +46,7 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.poi.ss.usermodel.Row;
 import org.jdesktop.swingx.JXTable;
-import org.joda.time.DateTime;
-import org.joda.time.Days;
-import static org.joda.time.format.ISODateTimeFormat.date;
+
 
 
 /**
@@ -648,64 +646,31 @@ double ultima= Double.parseDouble(nf.format(ultimaCuota).replace(",", "."));
         
      //   ImageIcon errorIcon = new ImageIcon("C:\\madremia\\PRogramaLiberty\\descarga\\no-imagen.png");
 
-        Object [] fila=new Object [15];
+        Object [] fila=new Object [7];
 ImageIcon icon= new ImageIcon("");
            try{
           
           //debe haber un sql que haga todo de aca, pero me da paja buscarlo
-            String sql="SELECT a.id,a.ramo,b.nombre,a.poliza,a.item,a.tipoDoc,a.cuota,a.maxCuota,a.monto,a.moneda,a.fecha_vencimiento,a.company,a.estado,a.obs,a.transferencia FROM caracola.cobranzas a, caracola.contactos b where a.fk_idContacto=b.rut group by a.poliza";
+            String sql="SELECT a.id,b.nombre,a.poliza,a.item,a.company FROM caracola.cobranzas a, caracola.contactos b where a.fk_idContacto=b.rut group by a.poliza";
             conexion.conectar();
             conexion.sentencia = conexion.conn.prepareStatement(sql);
             ResultSet objSet=conexion.sentencia.executeQuery(sql);
            int contador=0;
                    while(objSet.next()){
-                for (int i = 0; i < 15; i++) {
+                for (int i = 0; i < 5; i++) {
                     fila[i]=objSet.getObject(i+1);
                     
                     switch(i){
-                        case 10:
-                        String fecha=fila[i].toString();
-                        SimpleDateFormat hh = new SimpleDateFormat("dd MM yyyy");
-                        java.sql.Date fechaUtil = java.sql.Date.valueOf(fecha);
-                        java.util.Date fechaActual = new java.util.Date();
-                        fechaUtil.toLocalDate();                       
-                        hh.applyPattern("dd/MM/yyyy");
-                        hh.format(fechaUtil);
-                        hh.format(fechaActual);
-                        //     LocalDate x =fechaUtil.toLocalDate();
-                        //   x.format(DateTimeFormatter.ofPattern("dd MMM yyyy"));
-                        java.util.Date fecha_actual=java.sql.Date.from(Calendar.getInstance().toInstant());
-                        hh.format(fecha_actual);
-                        fila[i]=hh.format(fechaUtil);
-                            ;break;
-                        case 5://tipo documento
-                            switch((int)fila[i]){
-                                case 0:fila[i]="EMISIÓN";break;
-                                case 1:fila[i]="MODIFICACIÓN";break;
-                                case 2:fila[i]="REHABILITACIÓN";break;
-                            }
-                            ;break;
-                        case 11:
+                        
+                      
+                        case 4:
                             switch((int)fila[i]){
                                 case 0:fila[i]="HDI";break;
                                 case 1:fila[i]="Liberty";break;
                                 case 2:fila[i]="SURA";break;
                             } ;break;
-                        case 12:
-              
-                            switch((int) fila[i]){
-                                case 0:fila[i]="Pendiente";break;
-                                case 1:fila[i]="Cobrado";break;
-                                case 2:fila[i]="Ingresado";break;
-                            }
-                            ;break;
-                        case 14://se inserta el icono de la imagen      
-                            if(fila[i]==null){
-                          icon= new ImageIcon("C:\\madremia\\PRogramaLiberty\\descarga\\no-imagen.png");
-                            }else{
-                             icon= new ImageIcon("C:\\madremia\\PRogramaLiberty\\descarga\\yes-imagen.png"); 
-                            }
-                            ;break;   
+                    
+                       
             
                             
                     }
@@ -717,12 +682,12 @@ ImageIcon icon= new ImageIcon("");
                  
                 }
                    modelo.addRow(fila);
-                  modelo.setValueAt(icon, contador, 14);
+                  modelo.setValueAt(new ImageIcon("C:\\madremia\\PRogramaLiberty\\descarga\\ver_poliza.png"), contador, 5);
                   contador++;
                    }
             
            } catch (SQLException ex) {
-               System.out.println("Error al buscar Asegurado");
+               System.out.println("Error al buscar Tabla Cobranza");
                System.out.println(ex);
            }
             return modelo; 
@@ -971,12 +936,12 @@ if(file!=null){
         return directorio;
    }
 
-    public ArrayList<String> buscarNumPolizaxContacto(String toString) {
+    public ArrayList<String> buscarNumPolizaxContacto(String rut) {
       ArrayList<String> itemPolizas= new ArrayList();
            try{
           
           //debe haber un sql que haga todo de aca, pero me da paja buscarlo
-            String sql="SELECT a.poliza FROM caracola.cobranzas a, caracola.contactos b where b.rut=a.fk_idContacto GROUP BY(a.poliza)";
+            String sql="SELECT a.poliza FROM caracola.cobranzas a where a.fk_idContacto='"+rut+"' GROUP BY(a.poliza)";
             conexion.conectar();
             conexion.sentencia = conexion.conn.prepareStatement(sql);
             ResultSet objSet=conexion.sentencia.executeQuery(sql);
@@ -1062,6 +1027,15 @@ return fila;
            
 return fila[0].toString();
         
+    }
+    
+    public String[] calcularEstado(){
+    String[] entrada = new String[2];
+    return entrada;
+    }
+
+    public int buscarNombrePorRut(String rut) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }
 

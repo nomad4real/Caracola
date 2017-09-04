@@ -29,6 +29,7 @@ import static java.nio.file.Files.delete;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -48,6 +49,9 @@ import org.jdesktop.swingx.decorator.Highlighter;
 import org.jdesktop.swingx.decorator.PatternPredicate;
 import org.jdesktop.swingx.decorator.ShadingColorHighlighter;
 import metodos.ButtonColumn;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 
 
@@ -83,68 +87,17 @@ public static long numPoliza=0;
         //Inicio crear colores de filtro
         
         //setear en tabla colores
-        tabla.addHighlighter(new ColorHighlighter( new PatternPredicate("Pendiente", 12), Color.RED,Color.WHITE, null, Color.WHITE));
-        tabla.addHighlighter( new ColorHighlighter(new PatternPredicate("Ingresado", 12), Color.GREEN,null, null, null));
-        tabla.addHighlighter( new ColorHighlighter(new PatternPredicate("Cobrado", 12), Color.ORANGE,null,null,Color.ORANGE));
-        //fin setear en tabla
+//        tabla.addHighlighter(new ColorHighlighter( new PatternPredicate("Pendiente", 12), Color.RED,Color.WHITE, null, Color.WHITE));
+//        tabla.addHighlighter( new ColorHighlighter(new PatternPredicate("Ingresado", 12), Color.GREEN,null, null, null));
+//        tabla.addHighlighter( new ColorHighlighter(new PatternPredicate("Cobrado", 12), Color.ORANGE,null,null,Color.ORANGE));
+//        //fin setear en tabla
 //inicio cargar combobox
-        final JComboBox comboBox = new JComboBox();
-        comboBox.addItem("Pendiente");
-        comboBox.addItem("Cobrado");
-        comboBox.addItem("Ingresado");
-        TableColumn miColumna = tabla.getColumnModel().getColumn(12);
-        miColumna.setCellEditor(new DefaultCellEditor(comboBox));
+     
         //fin cargar combox setear estado
-        tabla.getModel().addTableModelListener(new TableModelListener() {
+ 
 //se añade listener para cuando se edita la tabla
             
-            @Override
-            public void tableChanged(TableModelEvent evento) {
-                switch(evento.getColumn()){
-                    case 0:;break;
-                    case 1:;break;
-                    case 2:;break;
-                    case 3:;break;
-                    case 4:;break;
-                    case 5:;break;
-                    case 6:;break;
-                    case 7:;break;
-                    case 8:;break;
-                    case 9:;break;
-                    case 10:;break;
-                    case 11:;break;
-                    case 12://cuando se cambio el combobox
-                        switch(comboBox.getSelectedItem().toString()){                          
-                            case "Cobrado"://si el estado es cobrado entonces abre explorador para seleccionar transferencia de respaldo
-                                JFileChooser fc = new JFileChooser();
-                               
-                                fc.setCurrentDirectory(new File("C:\\madremia\\PRogramaLiberty\\descarga"));
-                                int returnVal =  fc.showOpenDialog(null);
-                                File file = fc.getSelectedFile();
-                                if (returnVal == JFileChooser.APPROVE_OPTION) {
-                                    
-                                    r.updatearEstadoConTransferencia(1, Long.parseLong(tabla.getValueAt(tabla.getSelectedRow(), 0).toString()), file);
-                                }else{
-                                    r.updatearEstadoConTransferencia(1, Long.parseLong(tabla.getValueAt(tabla.getSelectedRow(), 0).toString()), null);
-                                }
-                                ;break;
-                                
-                            case "Pendiente":
-                                r.updatearEstadoConTransferencia(0, Long.parseLong(tabla.getValueAt(tabla.getSelectedRow(), 0).toString()), null);;break;
-                                
-                            case "Ingresado":r.updatearEstadoConTransferencia(2, Long.parseLong(tabla.getValueAt(tabla.getSelectedRow(), 0).toString()), null);;break;
-                        }
-                        
-                        
-                        ;break;
-                    case 13:;break;
-                    case 14:;break;
-                    
-                }
-                
-                
-            }
-        });
+     
 
  //   AbstractHyperlinkAction<Object> simpleAction = new AbstractHyperlinkAction<Object>(null) {
 
@@ -176,17 +129,15 @@ public static long numPoliza=0;
 {
     public void actionPerformed(ActionEvent e)
     {
+        System.out.println("Holaaa El Button Column");
         JTable table = (JTable)e.getSource();
-          if(table.getValueAt(table.getSelectedRow(), 14).toString().equals("C:\\madremia\\PRogramaLiberty\\descarga\\no-imagen.png")){
-          //agregar transferencia
+   
           
-          
-          }   
 
     }
 };
  
- ButtonColumn buttonColumn = new ButtonColumn(tabla, delete, 14);
+ ButtonColumn buttonColumn = new ButtonColumn(tabla, delete, 5);
 
 
  //  tabla.setCellSelectionEnabled(true);
@@ -194,10 +145,80 @@ public static long numPoliza=0;
     this.setLocationRelativeTo(null);
     this.setLayout(null);
     //fin centrar
-    tabla.setSortOrder("Fecha Vencimiento", SortOrder.DESCENDING);  
-      tabla.setRowHeight(30);
-      this.setExtendedState(JFrame.MAXIMIZED_BOTH); 
+   // tabla.setSortOrder("Fecha Vencimiento", SortOrder.DESCENDING);  
+      tabla.setRowHeight(50);
+      
+     // this.setExtendedState(JFrame.MAXIMIZED_BOTH); 
+     final ArrayList<String[]> listadoPendientes= new ArrayList();
+    final ArrayList<String> listadoCobrados= new ArrayList();
+    final ArrayList<String> listadoIngresados= new ArrayList();
+     DefaultTableModel modeloARevisar = new javax.swing.table.DefaultTableModel(new Object [][] {},new String [] {"id", "Poliza", "Item", "TipoDoc", "cuota", "Max Cuota", "monto", "moneda", "Fecha de Vencimiento", "Estado", "Observaciones"}) ;
+       DateTimeFormatter dtf = DateTimeFormat.forPattern("dd/MM/YYYY");
+       DateTime hoy = DateTime.now(); 
+     for(int l=0;l<tabla.getRowCount();l++){
+        modeloARevisar =r.buscarTablaPoliza(modeloARevisar, Long.parseLong(tabla.getValueAt(l, 2).toString()));
+    
+    
+    for(int i=0;i<modeloARevisar.getRowCount();i++){//aca no se busca la tabla se reemplaza por modelo buscar tabla completa sin group
+        if(modeloARevisar.getValueAt(i, 9).equals("Pendiente")){
+            String[] fecha_cuota = new String[2];
+             fecha_cuota[0]=modeloARevisar.getValueAt(i, 8).toString();
+             fecha_cuota[1]=modeloARevisar.getValueAt(i, 4).toString();
+            listadoPendientes.add(fecha_cuota);//fechas Pendientes
+            if(i==0){
+          
+            }
+            
+        }else{//si no hay pendiente entonces se comprueba por Cobrado
+            if(modeloARevisar.getValueAt(i, 9).equals("Cobrado")){
+            
+            listadoCobrados.add(modeloARevisar.getValueAt(i, 8).toString());//fechas Cobradas
+               this.jlbl_total_cobrados.setText(String.valueOf(listadoCobrados.size()));
+            
+        }else{//entonces es ingresado
+                listadoIngresados.add(modeloARevisar.getValueAt(i, 8).toString()); // fechas ingresadas
+            
+            }
+        }
 
+//este queda el primero
+
+
+}
+    String fechaPendiente="";
+
+if(!(listadoIngresados.isEmpty())){////si  esta al dia no se eliminan defaults
+    
+}else{
+    if(!(listadoCobrados.isEmpty())){
+       if(!(listadoPendientes.isEmpty())){
+            DateTime FA=dtf.parseDateTime(String.valueOf(listadoPendientes.get(0)[0]));   
+       
+       DateTime today = new DateTime();
+     if(FA.isBefore(today)){//primero se ve la fecha
+          System.out.println("La cuota Pendiente esta atrasada fila:"+l);
+           }else{
+         //Vigente, por vencer
+     }
+      
+       }
+    ;
+    }else{
+
+    if(!(listadoPendientes.isEmpty())){
+        DateTime FA=dtf.parseDateTime(String.valueOf(listadoPendientes.get(0)[0]));   
+       
+       DateTime today = new DateTime();
+     if(FA.isBefore(today)){//primero se ve la fecha
+          System.out.println("La cuota Pendiente esta atrasada fila:"+l);
+           }else{
+         //Vigente, por vencer
+     }
+    }
+    }
+ 
+}
+}
     }
     
     
@@ -208,7 +229,6 @@ public static long numPoliza=0;
 
         ver_jpopup = new javax.swing.JPopupMenu();
         jmenu_item_verPolizas = new javax.swing.JMenuItem();
-        jlbl_fecha = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tabla = new org.jdesktop.swingx.JXTable(){
@@ -229,18 +249,10 @@ public static long numPoliza=0;
             }
 
         };
-        jPanel2 = new javax.swing.JPanel();
-        jLabel2 = new javax.swing.JLabel();
-        jLabel10 = new javax.swing.JLabel();
-        jLabel11 = new javax.swing.JLabel();
-        jLabel12 = new javax.swing.JLabel();
-        jtxt_total_filas = new javax.swing.JLabel();
         jPanel5 = new javax.swing.JPanel();
         jtxt_buscar = new org.jdesktop.swingx.JXSearchField();
         jLabel1 = new javax.swing.JLabel();
-        jLabel14 = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
-        filtro_jcombo = new javax.swing.JComboBox<>();
         jCheckBox1 = new javax.swing.JCheckBox();
         jCheckBox3 = new javax.swing.JCheckBox();
         jCheckBox4 = new javax.swing.JCheckBox();
@@ -258,6 +270,16 @@ public static long numPoliza=0;
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
+        filtro_jcombo = new javax.swing.JComboBox<>();
+        filtro_especial = new javax.swing.JComboBox<>();
+        jLabel2 = new javax.swing.JLabel();
+        jtxt_total_filas = new javax.swing.JLabel();
+        jlbl_total_cobrados = new javax.swing.JLabel();
+        jLabel11 = new javax.swing.JLabel();
+        jlbl_fecha = new javax.swing.JLabel();
+        jSeparator1 = new javax.swing.JSeparator();
+        jtxt_total_filas1 = new javax.swing.JLabel();
+        jtxt_total_filas2 = new javax.swing.JLabel();
 
         jmenu_item_verPolizas.setFont(new java.awt.Font("Segoe UI", 1, 17)); // NOI18N
         jmenu_item_verPolizas.setText("Ver Poliza");
@@ -275,32 +297,29 @@ public static long numPoliza=0;
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Mis Cobranzas");
-        setAlwaysOnTop(true);
         setAutoRequestFocus(false);
-
-        jlbl_fecha.setFont(new java.awt.Font("Eurostile LT Std", 3, 24)); // NOI18N
-        jlbl_fecha.setText(consultas.fechaActual());
 
         jLabel5.setFont(new java.awt.Font("Eurostile LT Std", 3, 24)); // NOI18N
         jLabel5.setText("Fecha :");
 
+        tabla.setForeground(new java.awt.Color(0, 0, 204));
         tabla.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
             new String [] {
-                "ID", "Ramo", "Contacto", "Poliza", "Item", "Tipo Documento", "Cuota", "Max Cuota", "Monto", "Moneda", "Fecha Vencimiento", "Compañia", "Estado", "Observaciones", "Transferencias"
+                "ID", "Nombre", "Poliza", "item", "Compañia", "VerPoliza"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                true, true, true, true, true, true, true, false, true, true, true, true, true, true, true
+                true, true, false, true, false, true
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return canEdit [columnIndex];
             }
         });
-        tabla.setFont(new java.awt.Font("Vectora LT Std Light", 0, 14)); // NOI18N
+        tabla.setFont(new java.awt.Font("Avenir LT Std 35 Light", 0, 18)); // NOI18N
         tabla.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 tablaMouseClicked(evt);
@@ -311,91 +330,25 @@ public static long numPoliza=0;
         });
         jScrollPane1.setViewportView(tabla);
         if (tabla.getColumnModel().getColumnCount() > 0) {
-            tabla.getColumnModel().getColumn(0).setMinWidth(60);
-            tabla.getColumnModel().getColumn(0).setMaxWidth(60);
-            tabla.getColumnModel().getColumn(1).setMinWidth(80);
-            tabla.getColumnModel().getColumn(1).setPreferredWidth(80);
-            tabla.getColumnModel().getColumn(1).setMaxWidth(80);
-            tabla.getColumnModel().getColumn(2).setMinWidth(200);
-            tabla.getColumnModel().getColumn(2).setPreferredWidth(200);
-            tabla.getColumnModel().getColumn(2).setMaxWidth(200);
-            tabla.getColumnModel().getColumn(3).setMinWidth(80);
-            tabla.getColumnModel().getColumn(3).setMaxWidth(80);
-            tabla.getColumnModel().getColumn(4).setMinWidth(50);
-            tabla.getColumnModel().getColumn(4).setMaxWidth(50);
-            tabla.getColumnModel().getColumn(5).setMinWidth(70);
-            tabla.getColumnModel().getColumn(5).setPreferredWidth(70);
-            tabla.getColumnModel().getColumn(5).setMaxWidth(70);
-            tabla.getColumnModel().getColumn(6).setResizable(false);
-            tabla.getColumnModel().getColumn(6).setPreferredWidth(50);
-            tabla.getColumnModel().getColumn(6).setHeaderValue("Cuota");
-            tabla.getColumnModel().getColumn(7).setResizable(false);
-            tabla.getColumnModel().getColumn(7).setPreferredWidth(50);
-            tabla.getColumnModel().getColumn(8).setMinWidth(70);
-            tabla.getColumnModel().getColumn(8).setMaxWidth(70);
-            tabla.getColumnModel().getColumn(9).setMinWidth(50);
-            tabla.getColumnModel().getColumn(9).setMaxWidth(50);
-            tabla.getColumnModel().getColumn(10).setMinWidth(100);
-            tabla.getColumnModel().getColumn(10).setPreferredWidth(100);
-            tabla.getColumnModel().getColumn(10).setMaxWidth(100);
-            tabla.getColumnModel().getColumn(11).setMinWidth(80);
-            tabla.getColumnModel().getColumn(11).setMaxWidth(80);
-            tabla.getColumnModel().getColumn(12).setMinWidth(70);
-            tabla.getColumnModel().getColumn(12).setMaxWidth(70);
-            tabla.getColumnModel().getColumn(13).setMinWidth(200);
-            tabla.getColumnModel().getColumn(13).setPreferredWidth(200);
-            tabla.getColumnModel().getColumn(13).setMaxWidth(200);
-            tabla.getColumnModel().getColumn(14).setMinWidth(35);
-            tabla.getColumnModel().getColumn(14).setPreferredWidth(35);
-            tabla.getColumnModel().getColumn(14).setMaxWidth(35);
+            tabla.getColumnModel().getColumn(0).setMinWidth(1);
+            tabla.getColumnModel().getColumn(0).setPreferredWidth(1);
+            tabla.getColumnModel().getColumn(0).setMaxWidth(1);
+            tabla.getColumnModel().getColumn(1).setMinWidth(300);
+            tabla.getColumnModel().getColumn(1).setPreferredWidth(300);
+            tabla.getColumnModel().getColumn(1).setMaxWidth(300);
+            tabla.getColumnModel().getColumn(2).setMinWidth(150);
+            tabla.getColumnModel().getColumn(2).setPreferredWidth(150);
+            tabla.getColumnModel().getColumn(2).setMaxWidth(150);
+            tabla.getColumnModel().getColumn(3).setMinWidth(50);
+            tabla.getColumnModel().getColumn(3).setPreferredWidth(50);
+            tabla.getColumnModel().getColumn(3).setMaxWidth(50);
+            tabla.getColumnModel().getColumn(4).setMinWidth(100);
+            tabla.getColumnModel().getColumn(4).setPreferredWidth(100);
+            tabla.getColumnModel().getColumn(4).setMaxWidth(100);
+            tabla.getColumnModel().getColumn(5).setMinWidth(45);
+            tabla.getColumnModel().getColumn(5).setPreferredWidth(45);
+            tabla.getColumnModel().getColumn(5).setMaxWidth(45);
         }
-
-        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Resumen", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Eurostile LT Std", 1, 14))); // NOI18N
-
-        jLabel2.setFont(new java.awt.Font("Vectora LT Std Light", 1, 18)); // NOI18N
-        jLabel2.setText("Total Filas :");
-
-        jLabel10.setFont(new java.awt.Font("Vectora LT Std Light", 1, 18)); // NOI18N
-        jLabel10.setText("Total Pendientes :");
-
-        jLabel11.setFont(new java.awt.Font("Vectora LT Std Light", 1, 18)); // NOI18N
-        jLabel11.setText("Total Ingresados :");
-
-        jLabel12.setFont(new java.awt.Font("Vectora LT Std Light", 1, 18)); // NOI18N
-        jLabel12.setText("Por vencer (-30 dias) :");
-
-        jtxt_total_filas.setFont(new java.awt.Font("Vectora LT Std Light", 1, 18)); // NOI18N
-        jtxt_total_filas.setText("0");
-
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel2)
-                    .addComponent(jLabel10)
-                    .addComponent(jLabel11)
-                    .addComponent(jLabel12))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jtxt_total_filas, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 42, Short.MAX_VALUE))
-        );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(jtxt_total_filas))
-                .addGap(17, 17, 17)
-                .addComponent(jLabel10)
-                .addGap(18, 18, 18)
-                .addComponent(jLabel11)
-                .addGap(18, 18, 18)
-                .addComponent(jLabel12))
-        );
 
         jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Busqueda", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Eurostile LT Std", 1, 14))); // NOI18N
         jPanel5.setToolTipText("Buscar");
@@ -415,44 +368,27 @@ public static long numPoliza=0;
         jLabel1.setFont(new java.awt.Font("Eurostile LT Std Condensed", 2, 14)); // NOI18N
         jLabel1.setText("Tambien puedes buscar apretando las teclas CTRL+F");
 
-        jLabel14.setFont(new java.awt.Font("Tahoma", 0, 20)); // NOI18N
-        jLabel14.setForeground(new java.awt.Color(255, 153, 0));
-        jLabel14.setText("!");
-
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
         jPanel5Layout.setHorizontalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel5Layout.createSequentialGroup()
-                .addGap(42, 42, 42)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel5Layout.createSequentialGroup()
-                        .addComponent(jLabel14)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel1))
-                    .addComponent(jtxt_buscar, javax.swing.GroupLayout.PREFERRED_SIZE, 329, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(64, Short.MAX_VALUE))
+                    .addComponent(jtxt_buscar, javax.swing.GroupLayout.PREFERRED_SIZE, 329, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel1))
+                .addContainerGap())
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
-                .addGap(24, 24, 24)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jtxt_buscar, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel14)
-                    .addComponent(jLabel1))
-                .addGap(25, 25, 25))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel1)
+                .addContainerGap())
         );
 
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Filtros", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Eurostile LT Std Condensed", 1, 18))); // NOI18N
-
-        filtro_jcombo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Todos Los Registros", "Solo los Pendientes", "Solo Ingresados", "Solo Cobrados" }));
-        filtro_jcombo.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                filtro_jcomboItemStateChanged(evt);
-            }
-        });
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Mostrando Meses", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Eurostile LT Std Condensed", 1, 18))); // NOI18N
 
         jCheckBox1.setText("Enero");
 
@@ -463,6 +399,11 @@ public static long numPoliza=0;
         jCheckBox5.setText("Abril");
 
         jCheckBox6.setText("Mayo");
+        jCheckBox6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCheckBox6ActionPerformed(evt);
+            }
+        });
 
         jCheckBox7.setText("Junio");
 
@@ -473,6 +414,11 @@ public static long numPoliza=0;
         jCheckBox10.setText("Septiembre");
 
         jcbox_octubre.setText("Octubre");
+        jcbox_octubre.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jcbox_octubreActionPerformed(evt);
+            }
+        });
 
         jCheckBox12.setText("Agosto");
 
@@ -484,60 +430,57 @@ public static long numPoliza=0;
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(filtro_jcombo, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jCheckBox7)
-                    .addComponent(jCheckBox6)
-                    .addComponent(jCheckBox5)
-                    .addComponent(jCheckBox4)
                     .addComponent(jCheckBox3)
-                    .addComponent(jCheckBox1))
-                .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jCheckBox8)
-                    .addComponent(jCheckBox9)
-                    .addComponent(jCheckBox10)
-                    .addComponent(jcbox_octubre)
-                    .addComponent(jCheckBox12)
-                    .addComponent(jCheckBox2))
-                .addContainerGap(14, Short.MAX_VALUE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jCheckBox1)
+                            .addComponent(jCheckBox6)
+                            .addComponent(jCheckBox4)
+                            .addComponent(jCheckBox7)
+                            .addComponent(jCheckBox5))
+                        .addGap(71, 71, 71)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jCheckBox12)
+                            .addComponent(jCheckBox2)
+                            .addComponent(jCheckBox10)
+                            .addComponent(jCheckBox8)
+                            .addComponent(jCheckBox9)
+                            .addComponent(jcbox_octubre))))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jCheckBox1)
+                    .addComponent(jCheckBox2))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jCheckBox3)
+                    .addComponent(jCheckBox12))
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(25, 25, 25)
-                        .addComponent(filtro_jcombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jCheckBox2)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jCheckBox12)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jcbox_octubre)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jCheckBox10)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jCheckBox9)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jCheckBox8))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jCheckBox1)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jCheckBox3)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jCheckBox4)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jCheckBox5)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jCheckBox6)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jCheckBox7)))))
-                .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jCheckBox4)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jCheckBox6)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jCheckBox5)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jCheckBox7)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jCheckBox10)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jcbox_octubre, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jCheckBox9, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jCheckBox8)
+                        .addGap(97, 97, 97))))
         );
 
         jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Herramientas", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Eurostile LT Std Condensed", 1, 18))); // NOI18N
@@ -591,54 +534,122 @@ public static long numPoliza=0;
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButton1))
                     .addComponent(jtbn_addUser, javax.swing.GroupLayout.Alignment.TRAILING))
-                .addContainerGap(43, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
+
+        filtro_jcombo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Todos Los Registros", "Solo los Pendientes", "Solo Ingresados", "Solo Cobrados" }));
+        filtro_jcombo.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                filtro_jcomboItemStateChanged(evt);
+            }
+        });
+
+        filtro_especial.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Filtro Especial" }));
+        filtro_especial.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                filtro_especialItemStateChanged(evt);
+            }
+        });
+
+        jLabel2.setFont(new java.awt.Font("Eurostile LT Std", 1, 18)); // NOI18N
+        jLabel2.setText("Total Filas :");
+
+        jtxt_total_filas.setFont(new java.awt.Font("Vectora LT Std Light", 1, 18)); // NOI18N
+        jtxt_total_filas.setText("0");
+
+        jlbl_total_cobrados.setFont(new java.awt.Font("Eurostile LT Std", 1, 18)); // NOI18N
+        jlbl_total_cobrados.setText("Total Pendientes :");
+
+        jLabel11.setFont(new java.awt.Font("Eurostile LT Std", 1, 18)); // NOI18N
+        jLabel11.setText("Total Ingresados :");
+
+        jlbl_fecha.setFont(new java.awt.Font("Eurostile LT Std", 3, 24)); // NOI18N
+        jlbl_fecha.setText(consultas.fechaActual());
+
+        jtxt_total_filas1.setFont(new java.awt.Font("Vectora LT Std Light", 1, 18)); // NOI18N
+        jtxt_total_filas1.setText("0");
+
+        jtxt_total_filas2.setFont(new java.awt.Font("Vectora LT Std Light", 1, 18)); // NOI18N
+        jtxt_total_filas2.setText("0");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 1309, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(941, 941, 941)
+                        .addContainerGap()
                         .addComponent(jLabel5)
-                        .addGap(18, 18, 18)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jlbl_fecha)
-                        .addGap(0, 0, Short.MAX_VALUE))
+                        .addGap(59, 59, 59)
+                        .addComponent(filtro_jcombo, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(63, 63, 63)
+                        .addComponent(filtro_especial, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap())
+                        .addGap(10, 10, 10)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(jLabel2)
+                                        .addGap(86, 86, 86)
+                                        .addComponent(jtxt_total_filas))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                            .addComponent(jLabel11, javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addGroup(layout.createSequentialGroup()
+                                                .addComponent(jlbl_total_cobrados)
+                                                .addGap(27, 27, 27)))
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(jtxt_total_filas1)
+                                            .addComponent(jtxt_total_filas2, javax.swing.GroupLayout.Alignment.TRAILING)))))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                    .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 657, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addComponent(jScrollPane1)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(16, 16, 16)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel5)
-                    .addComponent(jlbl_fecha))
-                .addGap(24, 24, 24)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 290, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel5)
+                        .addComponent(jlbl_fecha))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(filtro_jcombo, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(filtro_especial, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 28, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(27, 27, 27)
-                        .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel2)
+                            .addComponent(jtxt_total_filas))
+                        .addGap(25, 25, 25)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jlbl_total_cobrados)
+                            .addComponent(jtxt_total_filas1))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel11)
+                            .addComponent(jtxt_total_filas2))))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 225, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -703,7 +714,7 @@ public static long numPoliza=0;
 int fila=tabla.rowAtPoint(evt.getPoint());
 int columna=tabla.columnAtPoint(evt.getPoint());
 //columna transferencias
-if(columna==14){
+if(columna==7){
     String dir=r.buscarDirectorioPorId(Long.parseLong(tabla.getValueAt(fila, 0).toString()));
     if(dir.equals("")){//buscar directorio guardado
     
@@ -732,7 +743,7 @@ if(columna==14){
     //    } catch (NullPointerException e) {
   //          maxCuotas=0;
    //     }
-   numPoliza=Long.parseLong(tabla.getValueAt(tabla.getSelectedRow(),3).toString());   
+   numPoliza=Long.parseLong(tabla.getValueAt(tabla.getSelectedRow(),2).toString());   
 idCobranza=Long.parseLong(tabla.getValueAt(tabla.getSelectedRow(),0).toString());
            new verPolizas().setVisible(true);
         this.dispose();
@@ -784,6 +795,18 @@ elQueOrdena.setRowFilter(RowFilter.regexFilter(this.jtxt_buscar.getText().toUppe
     private void jtxt_buscarKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jtxt_buscarKeyTyped
         // TODO add your handling code here:
     }//GEN-LAST:event_jtxt_buscarKeyTyped
+
+    private void jCheckBox6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox6ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jCheckBox6ActionPerformed
+
+    private void jcbox_octubreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jcbox_octubreActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jcbox_octubreActionPerformed
+
+    private void filtro_especialItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_filtro_especialItemStateChanged
+        // TODO add your handling code here:
+    }//GEN-LAST:event_filtro_especialItemStateChanged
     
     /**sout
      * @param args the command line arguments
@@ -809,6 +832,7 @@ elQueOrdena.setRowFilter(RowFilter.regexFilter(this.jtxt_buscar.getText().toUppe
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JComboBox<String> filtro_especial;
     private javax.swing.JComboBox<String> filtro_jcombo;
     private javax.swing.JButton jButton1;
     private javax.swing.JCheckBox jCheckBox1;
@@ -823,25 +847,25 @@ elQueOrdena.setRowFilter(RowFilter.regexFilter(this.jtxt_buscar.getText().toUppe
     private javax.swing.JCheckBox jCheckBox8;
     private javax.swing.JCheckBox jCheckBox9;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
-    private javax.swing.JLabel jLabel12;
-    private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JSeparator jSeparator1;
     private javax.swing.JCheckBox jcbox_octubre;
     private javax.swing.JLabel jlbl_fecha;
+    private javax.swing.JLabel jlbl_total_cobrados;
     private javax.swing.JMenuItem jmenu_item_verPolizas;
     private javax.swing.JButton jtbn_addUser;
     private org.jdesktop.swingx.JXSearchField jtxt_buscar;
     private javax.swing.JLabel jtxt_total_filas;
+    private javax.swing.JLabel jtxt_total_filas1;
+    private javax.swing.JLabel jtxt_total_filas2;
     private org.jdesktop.swingx.JXTable tabla;
     private javax.swing.JPopupMenu ver_jpopup;
     // End of variables declaration//GEN-END:variables
