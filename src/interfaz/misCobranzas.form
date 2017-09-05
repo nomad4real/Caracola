@@ -11,13 +11,25 @@
         <MenuItem class="javax.swing.JMenuItem" name="jmenu_item_verPolizas">
           <Properties>
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-              <Font name="Segoe UI" size="17" style="1"/>
+              <Font name="Avenir LT Std 35 Light" size="17" style="1"/>
             </Property>
             <Property name="text" type="java.lang.String" value="Ver Poliza"/>
           </Properties>
           <Events>
             <EventHandler event="mousePressed" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="jmenu_item_verPolizasMousePressed"/>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jmenu_item_verPolizasActionPerformed"/>
+          </Events>
+        </MenuItem>
+        <MenuItem class="javax.swing.JMenuItem" name="jmenu_ver_comentario">
+          <Properties>
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+              <Font name="Avenir LT Std 35 Light" size="18" style="1"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Ver Observacion"/>
+          </Properties>
+          <Events>
+            <EventHandler event="mousePressed" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="jmenu_ver_comentarioMousePressed"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jmenu_ver_comentarioActionPerformed"/>
           </Events>
         </MenuItem>
       </SubComponents>
@@ -115,7 +127,7 @@
                       <Component id="filtro_especial" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
               </Group>
-              <EmptySpace pref="28" max="32767" attributes="0"/>
+              <EmptySpace pref="21" max="32767" attributes="0"/>
               <Component id="jScrollPane1" min="-2" pref="198" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" max="-2" attributes="0">
@@ -144,7 +156,7 @@
                   <Component id="jPanel1" min="-2" pref="225" max="-2" attributes="0"/>
                   <Component id="jPanel4" max="32767" attributes="0"/>
               </Group>
-              <EmptySpace max="32767" attributes="0"/>
+              <EmptySpace pref="18" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -299,6 +311,7 @@
           <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
             <TitledBorder title="Mostrando Meses">
               <Font PropertyName="font" name="Eurostile LT Std Condensed" size="18" style="1"/>
+              <Color PropertyName="color" blue="0" green="cc" red="33" type="rgb"/>
             </TitledBorder>
           </Border>
         </Property>
@@ -310,22 +323,22 @@
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="jCheckBox3" min="-2" max="-2" attributes="0"/>
+                      <Component id="filtro_mes_febrero" min="-2" max="-2" attributes="0"/>
                       <Group type="102" alignment="0" attributes="0">
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <Component id="jCheckBox1" alignment="0" min="-2" max="-2" attributes="0"/>
-                              <Component id="jCheckBox6" alignment="0" min="-2" max="-2" attributes="0"/>
-                              <Component id="jCheckBox4" alignment="0" min="-2" max="-2" attributes="0"/>
-                              <Component id="jCheckBox7" alignment="0" min="-2" max="-2" attributes="0"/>
-                              <Component id="jCheckBox5" min="-2" max="-2" attributes="0"/>
+                              <Component id="filtro_mes_enero" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="filtro_mes_marzo" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="filtro_mes_junio" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="filtro_mes_abril" min="-2" max="-2" attributes="0"/>
+                              <Component id="filtro_mes_mayo" alignment="0" min="-2" max="-2" attributes="0"/>
                           </Group>
-                          <EmptySpace min="-2" pref="71" max="-2" attributes="0"/>
+                          <EmptySpace type="separate" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <Component id="jCheckBox12" min="-2" max="-2" attributes="0"/>
-                              <Component id="jCheckBox2" min="-2" max="-2" attributes="0"/>
-                              <Component id="jCheckBox10" min="-2" max="-2" attributes="0"/>
-                              <Component id="jCheckBox8" min="-2" max="-2" attributes="0"/>
-                              <Component id="jCheckBox9" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="filtro_mes_agosto" min="-2" max="-2" attributes="0"/>
+                              <Component id="filtro_mes_julio" min="-2" max="-2" attributes="0"/>
+                              <Component id="filtro_mes_septiembre" min="-2" max="-2" attributes="0"/>
+                              <Component id="filtro_mes_diciembre" min="-2" max="-2" attributes="0"/>
+                              <Component id="filtro_mes_noviembre" alignment="0" min="-2" max="-2" attributes="0"/>
                               <Component id="jcbox_octubre" alignment="0" min="-2" max="-2" attributes="0"/>
                           </Group>
                       </Group>
@@ -339,108 +352,159 @@
               <Group type="102" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
-                      <Component id="jCheckBox1" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="jCheckBox2" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="filtro_mes_enero" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="filtro_mes_julio" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
-                      <Component id="jCheckBox3" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="jCheckBox12" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="filtro_mes_febrero" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="filtro_mes_agosto" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Group type="102" alignment="1" attributes="0">
-                          <EmptySpace max="-2" attributes="0"/>
-                          <Component id="jCheckBox4" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace max="-2" attributes="0"/>
-                          <Component id="jCheckBox6" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace max="-2" attributes="0"/>
-                          <Component id="jCheckBox5" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                          <Component id="jCheckBox7" min="-2" max="-2" attributes="0"/>
+                      <Group type="102" attributes="0">
                           <EmptySpace max="32767" attributes="0"/>
+                          <Component id="filtro_mes_septiembre" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="jcbox_octubre" alignment="3" min="-2" pref="23" max="-2" attributes="0"/>
+                              <Component id="filtro_mes_abril" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="filtro_mes_noviembre" alignment="3" min="-2" pref="23" max="-2" attributes="0"/>
+                              <Component id="filtro_mes_mayo" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
                       </Group>
-                      <Group type="102" alignment="1" attributes="0">
-                          <EmptySpace max="32767" attributes="0"/>
-                          <Component id="jCheckBox10" min="-2" max="-2" attributes="0"/>
+                      <Group type="102" alignment="0" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="jcbox_octubre" min="-2" pref="23" max="-2" attributes="0"/>
-                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                          <Component id="jCheckBox9" min="-2" pref="23" max="-2" attributes="0"/>
-                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                          <Component id="jCheckBox8" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace min="-2" pref="97" max="-2" attributes="0"/>
+                          <Component id="filtro_mes_marzo" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace min="-2" pref="46" max="-2" attributes="0"/>
                       </Group>
                   </Group>
+                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Component id="filtro_mes_junio" min="-2" max="-2" attributes="0"/>
+                      <Component id="filtro_mes_diciembre" alignment="0" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace min="-2" pref="100" max="-2" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
       </Layout>
       <SubComponents>
-        <Component class="javax.swing.JCheckBox" name="jCheckBox1">
+        <Component class="javax.swing.JCheckBox" name="filtro_mes_enero">
           <Properties>
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+              <Font name="Avenir LT Std 35 Light" size="12" style="0"/>
+            </Property>
             <Property name="text" type="java.lang.String" value="Enero"/>
           </Properties>
+          <Events>
+            <EventHandler event="stateChanged" listener="javax.swing.event.ChangeListener" parameters="javax.swing.event.ChangeEvent" handler="filtro_mes_eneroStateChanged"/>
+          </Events>
         </Component>
-        <Component class="javax.swing.JCheckBox" name="jCheckBox3">
+        <Component class="javax.swing.JCheckBox" name="filtro_mes_febrero">
           <Properties>
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+              <Font name="Avenir LT Std 35 Light" size="12" style="0"/>
+            </Property>
             <Property name="text" type="java.lang.String" value="Febrero"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JCheckBox" name="jCheckBox4">
+        <Component class="javax.swing.JCheckBox" name="filtro_mes_marzo">
           <Properties>
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+              <Font name="Avenir LT Std 35 Light" size="12" style="0"/>
+            </Property>
             <Property name="text" type="java.lang.String" value="Marzo"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JCheckBox" name="jCheckBox5">
+        <Component class="javax.swing.JCheckBox" name="filtro_mes_abril">
           <Properties>
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+              <Font name="Avenir LT Std 35 Light" size="12" style="0"/>
+            </Property>
             <Property name="text" type="java.lang.String" value="Abril"/>
           </Properties>
-        </Component>
-        <Component class="javax.swing.JCheckBox" name="jCheckBox6">
-          <Properties>
-            <Property name="text" type="java.lang.String" value="Mayo"/>
-          </Properties>
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jCheckBox6ActionPerformed"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="filtro_mes_abrilActionPerformed"/>
           </Events>
         </Component>
-        <Component class="javax.swing.JCheckBox" name="jCheckBox7">
+        <Component class="javax.swing.JCheckBox" name="filtro_mes_junio">
           <Properties>
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+              <Font name="Avenir LT Std 35 Light" size="12" style="0"/>
+            </Property>
             <Property name="text" type="java.lang.String" value="Junio"/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="filtro_mes_junioActionPerformed"/>
+          </Events>
         </Component>
-        <Component class="javax.swing.JCheckBox" name="jCheckBox8">
+        <Component class="javax.swing.JCheckBox" name="filtro_mes_diciembre">
           <Properties>
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+              <Font name="Avenir LT Std 35 Light" size="12" style="0"/>
+            </Property>
             <Property name="text" type="java.lang.String" value="Diciembre"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JCheckBox" name="jCheckBox9">
+        <Component class="javax.swing.JCheckBox" name="filtro_mes_noviembre">
           <Properties>
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+              <Font name="Avenir LT Std 35 Light" size="12" style="0"/>
+            </Property>
             <Property name="text" type="java.lang.String" value="Noviembre"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JCheckBox" name="jCheckBox10">
+        <Component class="javax.swing.JCheckBox" name="filtro_mes_septiembre">
           <Properties>
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+              <Font name="Avenir LT Std 35 Light" size="12" style="0"/>
+            </Property>
             <Property name="text" type="java.lang.String" value="Septiembre"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JCheckBox" name="jcbox_octubre">
           <Properties>
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+              <Font name="Avenir LT Std 35 Light" size="12" style="0"/>
+            </Property>
             <Property name="text" type="java.lang.String" value="Octubre"/>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jcbox_octubreActionPerformed"/>
           </Events>
         </Component>
-        <Component class="javax.swing.JCheckBox" name="jCheckBox12">
+        <Component class="javax.swing.JCheckBox" name="filtro_mes_agosto">
           <Properties>
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+              <Font name="Avenir LT Std 35 Light" size="12" style="0"/>
+            </Property>
             <Property name="text" type="java.lang.String" value="Agosto"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JCheckBox" name="jCheckBox2">
+        <Component class="javax.swing.JCheckBox" name="filtro_mes_julio">
           <Properties>
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+              <Font name="Avenir LT Std 35 Light" size="12" style="0"/>
+            </Property>
             <Property name="text" type="java.lang.String" value="Julio"/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="filtro_mes_julioActionPerformed"/>
+          </Events>
+        </Component>
+        <Component class="javax.swing.JCheckBox" name="filtro_mes_mayo">
+          <Properties>
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+              <Font name="Avenir LT Std 35 Light" size="12" style="0"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Mayo"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="filtro_mes_mayoActionPerformed"/>
+          </Events>
         </Component>
       </SubComponents>
     </Container>
@@ -450,6 +514,7 @@
           <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
             <TitledBorder title="Herramientas">
               <Font PropertyName="font" name="Eurostile LT Std Condensed" size="18" style="1"/>
+              <Color PropertyName="color" blue="0" green="66" red="ff" type="rgb"/>
             </TitledBorder>
           </Border>
         </Property>
@@ -513,11 +578,17 @@
         </Component>
         <Component class="javax.swing.JLabel" name="jLabel3">
           <Properties>
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+              <Font name="Avenir LT Std 35 Light" size="11" style="0"/>
+            </Property>
             <Property name="text" type="java.lang.String" value="A&#xf1;adir Usuario"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JLabel" name="jLabel4">
           <Properties>
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+              <Font name="Avenir LT Std 35 Light" size="11" style="0"/>
+            </Property>
             <Property name="text" type="java.lang.String" value="A&#xf1;adir Cobranza"/>
           </Properties>
         </Component>

@@ -57,12 +57,12 @@ public class agregarContacto extends javax.swing.JFrame {
           t.setTitle("Editar Contacto");
           this.jPanel1.setBorder(t);
           
-            Object object[]=x.buscarPorId(misCobranzas.idCobranza);
-            this.jtxt_rut.setText(object[3].toString()+"-"+object[4].toString());
-            this.jtxt_nombre.setText(object[2].toString());
-            this.jtxt_direccion.setText(object[5].toString());
-             this.jtxt_telefonos.setText(object[6].toString());
-   
+//            Object object[]=x.buscarPorId(misCobranzas.idCobranza);
+//            this.jtxt_rut.setText(object[3].toString()+"-"+object[4].toString());
+//            this.jtxt_nombre.setText(object[2].toString());
+//            this.jtxt_direccion.setText(object[5].toString());
+//             this.jtxt_telefonos.setText(object[6].toString());
+//   
         }else{
             
             

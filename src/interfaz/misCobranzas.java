@@ -50,6 +50,7 @@ import org.jdesktop.swingx.decorator.PatternPredicate;
 import org.jdesktop.swingx.decorator.ShadingColorHighlighter;
 import metodos.ButtonColumn;
 import org.joda.time.DateTime;
+import static org.joda.time.Days.daysBetween;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
@@ -125,7 +126,7 @@ public static long numPoliza=0;
   //  tabla.getColumnExt(14).setCellRenderer(renderer);
   //  tabla.setRowSelectionInterval(0, 0);
   //fin link celda
-  Action delete = new AbstractAction()
+  Action ver_poliza = new AbstractAction()
 {
     public void actionPerformed(ActionEvent e)
     {
@@ -137,8 +138,13 @@ public static long numPoliza=0;
     }
 };
  
- ButtonColumn buttonColumn = new ButtonColumn(tabla, delete, 5);
-
+ ButtonColumn buttonColumn = new ButtonColumn(tabla, ver_poliza, 5);
+//final JComboBox comboBox = new JComboBox();
+//        comboBox.addItem("Pendiente");
+//        comboBox.addItem("Cobrado");
+//        comboBox.addItem("Ingresado");
+//        TableColumn miColumna = tabla.getColumnModel().getColumn(5);
+//        miColumna.setCellEditor(new DefaultCellEditor(comboBox));
 
  //  tabla.setCellSelectionEnabled(true);
    //se centra la ventana
@@ -193,12 +199,30 @@ if(!(listadoIngresados.isEmpty())){////si  esta al dia no se eliminan defaults
     if(!(listadoCobrados.isEmpty())){
        if(!(listadoPendientes.isEmpty())){
             DateTime FA=dtf.parseDateTime(String.valueOf(listadoPendientes.get(0)[0]));   
-       
+       System.out.println("fecha 1"+FA);
        DateTime today = new DateTime();
-     if(FA.isBefore(today)){//primero se ve la fecha
-          System.out.println("La cuota Pendiente esta atrasada fila:"+l);
+    if(FA.isBefore(today)){//primero se ve la fecha
+         //si la fecha de atraso pasan mas de 15 dias de diferencia
+         //entonces fila es estado=Anulada(ROJO)
+         //sino entonces esta en vias de anulacion
+
+         if(daysBetween(today,FA).getDays()<15){
+             System.out.println("Esta vencida por tdoavia no Anulada");//Rojo Claro
+         }else{
+         if(daysBetween(today,FA).getDays()>15){
+             System.out.println("Esta anulada");
+         }
+         
+         }
+//tabla.setValueAt("", l, 10);
            }else{
-         //Vigente, por vencer
+        if(FA.isAfter(today)&&daysBetween(today, FA).getDays()<15){
+            System.out.println("15 dias antes de que venca");//Amarillo claro
+        }else{
+            System.out.println("Poliza al dia");
+        }
+         //sino entonces se comprueba si es hoy o no
+         //si no es hoy entonces
      }
       
        }
@@ -206,13 +230,32 @@ if(!(listadoIngresados.isEmpty())){////si  esta al dia no se eliminan defaults
     }else{
 
     if(!(listadoPendientes.isEmpty())){
-        DateTime FA=dtf.parseDateTime(String.valueOf(listadoPendientes.get(0)[0]));   
-       
+        
+          DateTime FA=dtf.parseDateTime(String.valueOf(listadoPendientes.get(0)[0]));   
+       System.out.println("fecha 2"+FA);
        DateTime today = new DateTime();
-     if(FA.isBefore(today)){//primero se ve la fecha
-          System.out.println("La cuota Pendiente esta atrasada fila:"+l);
+    if(FA.isBefore(today)){//primero se ve la fecha
+         //si la fecha de atraso pasan mas de 15 dias de diferencia
+         //entonces fila es estado=Anulada(ROJO)
+         //sino entonces esta en vias de anulacion
+
+         if(daysBetween(today,FA).getDays()<15){
+             System.out.println("Esta vencida por tdoavia no Anulada");//Rojo Claro
+         }else{
+         if(daysBetween(today,FA).getDays()>15){
+             System.out.println("Esta anulada");
+         }
+         
+         }
+//tabla.setValueAt("", l, 10);
            }else{
-         //Vigente, por vencer
+        if(FA.isAfter(today)&&daysBetween(today, FA).getDays()<15){
+            System.out.println("15 dias antes de que venca");//Amarillo claro
+        }else{
+            System.out.println("Poliza al dia");
+        }
+         //sino entonces se comprueba si es hoy o no
+         //si no es hoy entonces
      }
     }
     }
@@ -229,6 +272,7 @@ if(!(listadoIngresados.isEmpty())){////si  esta al dia no se eliminan defaults
 
         ver_jpopup = new javax.swing.JPopupMenu();
         jmenu_item_verPolizas = new javax.swing.JMenuItem();
+        jmenu_ver_comentario = new javax.swing.JMenuItem();
         jLabel5 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tabla = new org.jdesktop.swingx.JXTable(){
@@ -253,18 +297,18 @@ if(!(listadoIngresados.isEmpty())){////si  esta al dia no se eliminan defaults
         jtxt_buscar = new org.jdesktop.swingx.JXSearchField();
         jLabel1 = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
-        jCheckBox1 = new javax.swing.JCheckBox();
-        jCheckBox3 = new javax.swing.JCheckBox();
-        jCheckBox4 = new javax.swing.JCheckBox();
-        jCheckBox5 = new javax.swing.JCheckBox();
-        jCheckBox6 = new javax.swing.JCheckBox();
-        jCheckBox7 = new javax.swing.JCheckBox();
-        jCheckBox8 = new javax.swing.JCheckBox();
-        jCheckBox9 = new javax.swing.JCheckBox();
-        jCheckBox10 = new javax.swing.JCheckBox();
+        filtro_mes_enero = new javax.swing.JCheckBox();
+        filtro_mes_febrero = new javax.swing.JCheckBox();
+        filtro_mes_marzo = new javax.swing.JCheckBox();
+        filtro_mes_abril = new javax.swing.JCheckBox();
+        filtro_mes_junio = new javax.swing.JCheckBox();
+        filtro_mes_diciembre = new javax.swing.JCheckBox();
+        filtro_mes_noviembre = new javax.swing.JCheckBox();
+        filtro_mes_septiembre = new javax.swing.JCheckBox();
         jcbox_octubre = new javax.swing.JCheckBox();
-        jCheckBox12 = new javax.swing.JCheckBox();
-        jCheckBox2 = new javax.swing.JCheckBox();
+        filtro_mes_agosto = new javax.swing.JCheckBox();
+        filtro_mes_julio = new javax.swing.JCheckBox();
+        filtro_mes_mayo = new javax.swing.JCheckBox();
         jPanel4 = new javax.swing.JPanel();
         jtbn_addUser = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
@@ -281,7 +325,7 @@ if(!(listadoIngresados.isEmpty())){////si  esta al dia no se eliminan defaults
         jtxt_total_filas1 = new javax.swing.JLabel();
         jtxt_total_filas2 = new javax.swing.JLabel();
 
-        jmenu_item_verPolizas.setFont(new java.awt.Font("Segoe UI", 1, 17)); // NOI18N
+        jmenu_item_verPolizas.setFont(new java.awt.Font("Avenir LT Std 35 Light", 1, 17)); // NOI18N
         jmenu_item_verPolizas.setText("Ver Poliza");
         jmenu_item_verPolizas.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
@@ -294,6 +338,20 @@ if(!(listadoIngresados.isEmpty())){////si  esta al dia no se eliminan defaults
             }
         });
         ver_jpopup.add(jmenu_item_verPolizas);
+
+        jmenu_ver_comentario.setFont(new java.awt.Font("Avenir LT Std 35 Light", 1, 18)); // NOI18N
+        jmenu_ver_comentario.setText("Ver Observacion");
+        jmenu_ver_comentario.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                jmenu_ver_comentarioMousePressed(evt);
+            }
+        });
+        jmenu_ver_comentario.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jmenu_ver_comentarioActionPerformed(evt);
+            }
+        });
+        ver_jpopup.add(jmenu_ver_comentario);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Mis Cobranzas");
@@ -388,31 +446,48 @@ if(!(listadoIngresados.isEmpty())){////si  esta al dia no se eliminan defaults
                 .addContainerGap())
         );
 
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Mostrando Meses", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Eurostile LT Std Condensed", 1, 18))); // NOI18N
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Mostrando Meses", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Eurostile LT Std Condensed", 1, 18), new java.awt.Color(51, 204, 0))); // NOI18N
 
-        jCheckBox1.setText("Enero");
-
-        jCheckBox3.setText("Febrero");
-
-        jCheckBox4.setText("Marzo");
-
-        jCheckBox5.setText("Abril");
-
-        jCheckBox6.setText("Mayo");
-        jCheckBox6.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jCheckBox6ActionPerformed(evt);
+        filtro_mes_enero.setFont(new java.awt.Font("Avenir LT Std 35 Light", 0, 12)); // NOI18N
+        filtro_mes_enero.setText("Enero");
+        filtro_mes_enero.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                filtro_mes_eneroStateChanged(evt);
             }
         });
 
-        jCheckBox7.setText("Junio");
+        filtro_mes_febrero.setFont(new java.awt.Font("Avenir LT Std 35 Light", 0, 12)); // NOI18N
+        filtro_mes_febrero.setText("Febrero");
 
-        jCheckBox8.setText("Diciembre");
+        filtro_mes_marzo.setFont(new java.awt.Font("Avenir LT Std 35 Light", 0, 12)); // NOI18N
+        filtro_mes_marzo.setText("Marzo");
 
-        jCheckBox9.setText("Noviembre");
+        filtro_mes_abril.setFont(new java.awt.Font("Avenir LT Std 35 Light", 0, 12)); // NOI18N
+        filtro_mes_abril.setText("Abril");
+        filtro_mes_abril.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                filtro_mes_abrilActionPerformed(evt);
+            }
+        });
 
-        jCheckBox10.setText("Septiembre");
+        filtro_mes_junio.setFont(new java.awt.Font("Avenir LT Std 35 Light", 0, 12)); // NOI18N
+        filtro_mes_junio.setText("Junio");
+        filtro_mes_junio.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                filtro_mes_junioActionPerformed(evt);
+            }
+        });
 
+        filtro_mes_diciembre.setFont(new java.awt.Font("Avenir LT Std 35 Light", 0, 12)); // NOI18N
+        filtro_mes_diciembre.setText("Diciembre");
+
+        filtro_mes_noviembre.setFont(new java.awt.Font("Avenir LT Std 35 Light", 0, 12)); // NOI18N
+        filtro_mes_noviembre.setText("Noviembre");
+
+        filtro_mes_septiembre.setFont(new java.awt.Font("Avenir LT Std 35 Light", 0, 12)); // NOI18N
+        filtro_mes_septiembre.setText("Septiembre");
+
+        jcbox_octubre.setFont(new java.awt.Font("Avenir LT Std 35 Light", 0, 12)); // NOI18N
         jcbox_octubre.setText("Octubre");
         jcbox_octubre.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -420,9 +495,24 @@ if(!(listadoIngresados.isEmpty())){////si  esta al dia no se eliminan defaults
             }
         });
 
-        jCheckBox12.setText("Agosto");
+        filtro_mes_agosto.setFont(new java.awt.Font("Avenir LT Std 35 Light", 0, 12)); // NOI18N
+        filtro_mes_agosto.setText("Agosto");
 
-        jCheckBox2.setText("Julio");
+        filtro_mes_julio.setFont(new java.awt.Font("Avenir LT Std 35 Light", 0, 12)); // NOI18N
+        filtro_mes_julio.setText("Julio");
+        filtro_mes_julio.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                filtro_mes_julioActionPerformed(evt);
+            }
+        });
+
+        filtro_mes_mayo.setFont(new java.awt.Font("Avenir LT Std 35 Light", 0, 12)); // NOI18N
+        filtro_mes_mayo.setText("Mayo");
+        filtro_mes_mayo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                filtro_mes_mayoActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -431,21 +521,21 @@ if(!(listadoIngresados.isEmpty())){////si  esta al dia no se eliminan defaults
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jCheckBox3)
+                    .addComponent(filtro_mes_febrero)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jCheckBox1)
-                            .addComponent(jCheckBox6)
-                            .addComponent(jCheckBox4)
-                            .addComponent(jCheckBox7)
-                            .addComponent(jCheckBox5))
-                        .addGap(71, 71, 71)
+                            .addComponent(filtro_mes_enero)
+                            .addComponent(filtro_mes_marzo)
+                            .addComponent(filtro_mes_junio)
+                            .addComponent(filtro_mes_abril)
+                            .addComponent(filtro_mes_mayo))
+                        .addGap(18, 18, 18)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jCheckBox12)
-                            .addComponent(jCheckBox2)
-                            .addComponent(jCheckBox10)
-                            .addComponent(jCheckBox8)
-                            .addComponent(jCheckBox9)
+                            .addComponent(filtro_mes_agosto)
+                            .addComponent(filtro_mes_julio)
+                            .addComponent(filtro_mes_septiembre)
+                            .addComponent(filtro_mes_diciembre)
+                            .addComponent(filtro_mes_noviembre)
                             .addComponent(jcbox_octubre))))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -454,36 +544,36 @@ if(!(listadoIngresados.isEmpty())){////si  esta al dia no se eliminan defaults
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jCheckBox1)
-                    .addComponent(jCheckBox2))
+                    .addComponent(filtro_mes_enero)
+                    .addComponent(filtro_mes_julio))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jCheckBox3)
-                    .addComponent(jCheckBox12))
+                    .addComponent(filtro_mes_febrero)
+                    .addComponent(filtro_mes_agosto))
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jCheckBox4)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jCheckBox6)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jCheckBox5)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jCheckBox7)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                    .addGroup(jPanel1Layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jCheckBox10)
+                        .addComponent(filtro_mes_septiembre)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jcbox_octubre, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jCheckBox9, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jCheckBox8)
-                        .addGap(97, 97, 97))))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jcbox_octubre, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(filtro_mes_abril))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(filtro_mes_noviembre, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(filtro_mes_mayo)))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(filtro_mes_marzo)
+                        .addGap(46, 46, 46)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(filtro_mes_junio)
+                    .addComponent(filtro_mes_diciembre))
+                .addGap(100, 100, 100))
         );
 
-        jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Herramientas", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Eurostile LT Std Condensed", 1, 18))); // NOI18N
+        jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Herramientas", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Eurostile LT Std Condensed", 1, 18), new java.awt.Color(255, 102, 0))); // NOI18N
 
         jtbn_addUser.setIcon(new javax.swing.ImageIcon("C:\\madremia\\PRogramaLiberty\\descarga\\add-user (1).png")); // NOI18N
         jtbn_addUser.addActionListener(new java.awt.event.ActionListener() {
@@ -492,8 +582,10 @@ if(!(listadoIngresados.isEmpty())){////si  esta al dia no se eliminan defaults
             }
         });
 
+        jLabel3.setFont(new java.awt.Font("Avenir LT Std 35 Light", 0, 11)); // NOI18N
         jLabel3.setText("Añadir Usuario");
 
+        jLabel4.setFont(new java.awt.Font("Avenir LT Std 35 Light", 0, 11)); // NOI18N
         jLabel4.setText("Añadir Cobranza");
 
         jButton1.setIcon(new javax.swing.ImageIcon("C:\\madremia\\PRogramaLiberty\\descarga\\add-file.png")); // NOI18N
@@ -627,7 +719,7 @@ if(!(listadoIngresados.isEmpty())){////si  esta al dia no se eliminan defaults
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(filtro_jcombo, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(filtro_especial, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 28, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 21, Short.MAX_VALUE)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
@@ -650,7 +742,7 @@ if(!(listadoIngresados.isEmpty())){////si  esta al dia no se eliminan defaults
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 225, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(18, Short.MAX_VALUE))
         );
 
         pack();
@@ -737,15 +829,11 @@ if(columna==7){
     }//GEN-LAST:event_tablaMouseClicked
     }
     private void jmenu_item_verPolizasMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jmenu_item_verPolizasMousePressed
-
-      //  try {// verifica si tiene max cuotas o no
-     //       maxCuotas= Integer.parseInt(tabla.getValueAt(tabla.getSelectedRow(),7).toString());
-    //    } catch (NullPointerException e) {
-  //          maxCuotas=0;
-   //     }
-   numPoliza=Long.parseLong(tabla.getValueAt(tabla.getSelectedRow(),2).toString());   
-idCobranza=Long.parseLong(tabla.getValueAt(tabla.getSelectedRow(),0).toString());
-           new verPolizas().setVisible(true);
+        
+        
+        numPoliza=Long.parseLong(tabla.getValueAt(tabla.getSelectedRow(),2).toString());
+        idCobranza=Long.parseLong(tabla.getValueAt(tabla.getSelectedRow(),0).toString());
+        new verPolizas().setVisible(true);
         this.dispose();
         
         
@@ -753,7 +841,7 @@ idCobranza=Long.parseLong(tabla.getValueAt(tabla.getSelectedRow(),0).toString())
     }//GEN-LAST:event_jmenu_item_verPolizasMousePressed
         
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-this.idCobranza=0;               
+        this.idCobranza=0;               
         new agregarCobranza().setVisible(true);
         this.dispose();
     }//GEN-LAST:event_jButton1ActionPerformed
@@ -796,9 +884,9 @@ elQueOrdena.setRowFilter(RowFilter.regexFilter(this.jtxt_buscar.getText().toUppe
         // TODO add your handling code here:
     }//GEN-LAST:event_jtxt_buscarKeyTyped
 
-    private void jCheckBox6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox6ActionPerformed
+    private void filtro_mes_mayoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_filtro_mes_mayoActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jCheckBox6ActionPerformed
+    }//GEN-LAST:event_filtro_mes_mayoActionPerformed
 
     private void jcbox_octubreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jcbox_octubreActionPerformed
         // TODO add your handling code here:
@@ -807,6 +895,35 @@ elQueOrdena.setRowFilter(RowFilter.regexFilter(this.jtxt_buscar.getText().toUppe
     private void filtro_especialItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_filtro_especialItemStateChanged
         // TODO add your handling code here:
     }//GEN-LAST:event_filtro_especialItemStateChanged
+
+    private void jmenu_ver_comentarioMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jmenu_ver_comentarioMousePressed
+        numPoliza=Long.parseLong(tabla.getValueAt(tabla.getSelectedRow(),2).toString());
+        
+        JTextArea p = new JTextArea();
+        this.dispose();
+        
+        
+    }//GEN-LAST:event_jmenu_ver_comentarioMousePressed
+
+    private void jmenu_ver_comentarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmenu_ver_comentarioActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jmenu_ver_comentarioActionPerformed
+
+    private void filtro_mes_eneroStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_filtro_mes_eneroStateChanged
+   
+    }//GEN-LAST:event_filtro_mes_eneroStateChanged
+
+    private void filtro_mes_abrilActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_filtro_mes_abrilActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_filtro_mes_abrilActionPerformed
+
+    private void filtro_mes_junioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_filtro_mes_junioActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_filtro_mes_junioActionPerformed
+
+    private void filtro_mes_julioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_filtro_mes_julioActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_filtro_mes_julioActionPerformed
     
     /**sout
      * @param args the command line arguments
@@ -834,18 +951,18 @@ elQueOrdena.setRowFilter(RowFilter.regexFilter(this.jtxt_buscar.getText().toUppe
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox<String> filtro_especial;
     private javax.swing.JComboBox<String> filtro_jcombo;
+    private javax.swing.JCheckBox filtro_mes_abril;
+    private javax.swing.JCheckBox filtro_mes_agosto;
+    private javax.swing.JCheckBox filtro_mes_diciembre;
+    private javax.swing.JCheckBox filtro_mes_enero;
+    private javax.swing.JCheckBox filtro_mes_febrero;
+    private javax.swing.JCheckBox filtro_mes_julio;
+    private javax.swing.JCheckBox filtro_mes_junio;
+    private javax.swing.JCheckBox filtro_mes_marzo;
+    private javax.swing.JCheckBox filtro_mes_mayo;
+    private javax.swing.JCheckBox filtro_mes_noviembre;
+    private javax.swing.JCheckBox filtro_mes_septiembre;
     private javax.swing.JButton jButton1;
-    private javax.swing.JCheckBox jCheckBox1;
-    private javax.swing.JCheckBox jCheckBox10;
-    private javax.swing.JCheckBox jCheckBox12;
-    private javax.swing.JCheckBox jCheckBox2;
-    private javax.swing.JCheckBox jCheckBox3;
-    private javax.swing.JCheckBox jCheckBox4;
-    private javax.swing.JCheckBox jCheckBox5;
-    private javax.swing.JCheckBox jCheckBox6;
-    private javax.swing.JCheckBox jCheckBox7;
-    private javax.swing.JCheckBox jCheckBox8;
-    private javax.swing.JCheckBox jCheckBox9;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel2;
@@ -861,6 +978,7 @@ elQueOrdena.setRowFilter(RowFilter.regexFilter(this.jtxt_buscar.getText().toUppe
     private javax.swing.JLabel jlbl_fecha;
     private javax.swing.JLabel jlbl_total_cobrados;
     private javax.swing.JMenuItem jmenu_item_verPolizas;
+    private javax.swing.JMenuItem jmenu_ver_comentario;
     private javax.swing.JButton jtbn_addUser;
     private org.jdesktop.swingx.JXSearchField jtxt_buscar;
     private javax.swing.JLabel jtxt_total_filas;

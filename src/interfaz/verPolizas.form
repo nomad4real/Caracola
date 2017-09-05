@@ -155,7 +155,7 @@
                 <Column editable="true" title="monto" type="java.lang.Object"/>
                 <Column editable="true" title="moneda" type="java.lang.Object"/>
                 <Column editable="true" title="Fecha de Vencimiento" type="java.lang.Object"/>
-                <Column editable="false" title="Estado" type="java.lang.Object"/>
+                <Column editable="true" title="Estado" type="java.lang.Object"/>
                 <Column editable="true" title="Observaciones" type="java.lang.Object"/>
               </Table>
             </Property>
@@ -225,6 +225,9 @@
               <TableHeader reorderingAllowed="true" resizingAllowed="true"/>
             </Property>
           </Properties>
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new org.jdesktop.swingx.JXTable(){&#xa;    @Override&#xa;    public Class getColumnClass(int column)&#xa;    {&#xa;        for (int row = 0; row &lt; getRowCount(); row++)&#xa;        {&#xa;            Object o = getValueAt(row, column);&#xa;&#xa;            if (o != null)&#xa;            {&#xa;                return o.getClass();&#xa;            }&#xa;        }&#xa;&#xa;        return Object.class;&#xa;    }&#xa;&#xa;}"/>
+          </AuxValues>
         </Component>
       </SubComponents>
     </Container>

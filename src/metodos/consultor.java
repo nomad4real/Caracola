@@ -770,29 +770,7 @@ ImageIcon icon= new ImageIcon("");
             return modelo; 
     }
 
-    public Object[] buscarPorId(long idCobranza) {
-   Object [] fila=new Object [17];
-           try{
-          
-          //debe haber un sql que haga todo de aca, pero me da paja buscarlo
-            String sql="SELECT a.id,a.ramo,b.nombre,b.rut,b.dv,b.direccion,b.telefonos,a.poliza,a.item,a.tipoDoc,a.cuota,a.maxCuota,a.monto,a.moneda,a.fecha_vencimiento,a.company,a.estado,a.obs FROM caracola.cobranzas a, caracola.contactos b where a.id="+idCobranza+" and b.rut=a.fk_idContacto";
-            conexion.conectar();
-            conexion.sentencia = conexion.conn.prepareStatement(sql);
-            ResultSet objSet=conexion.sentencia.executeQuery(sql);
-            
-                   while(objSet.next()){
-                for (int i = 0; i < 17; i++) {
-                    fila[i]=objSet.getObject(i+1);
-                     if(i==10){ }}
-                   }
-    
-    
-           }catch(SQLException ex){
-            System.out.println("Error consultar por id"+ex);
-           }
-           
-return fila;
-}
+  
 
     public String consultarFechaInicioPorId(int idCobranza) {
 ;
@@ -973,12 +951,13 @@ return itemPolizas;
                    while(objSet.next()){
                 for (int i = 0; i < 17; i++) {
                     fila[i]=objSet.getObject(i+1);
-                     if(i==10){ }}
+                
+                }
                    }
     
     
            }catch(SQLException ex){
-            System.out.println("Error consultar por id"+ex);
+            System.out.println("Error consultar por Poliza"+ex);
            }
            
 return fila;
@@ -1015,14 +994,14 @@ return fila;
             ResultSet objSet=conexion.sentencia.executeQuery(sql);
             
                    while(objSet.next()){
-                for (int i = 0; i < 17; i++) {
+                for (int i = 0; i < 1; i++) {
                     fila[i]=objSet.getObject(i+1);
                    }
                    }
     
     
            }catch(SQLException ex){
-            System.out.println("Error consultar por id"+ex);
+            System.out.println("Error consultar por buscarObservacionPorPoliza"+ex);
            }
            
 return fila[0].toString();

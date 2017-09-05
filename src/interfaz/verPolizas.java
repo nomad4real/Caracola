@@ -72,19 +72,15 @@ public class verPolizas extends javax.swing.JFrame {
         initComponents();
         this.tabla.setModel(x.buscarTablaPoliza((DefaultTableModel) this.tabla.getModel(), numPoliza));
        
-
+final JComboBox comboBox = new JComboBox();
+        comboBox.addItem("Pendiente");
+        comboBox.addItem("Cobrado");
+        comboBox.addItem("Ingresado");
+        TableColumn miColumna = tabla.getColumnModel().getColumn(9);
+        miColumna.setCellEditor(new DefaultCellEditor(comboBox));
         
         //se centra la clase
-        try{//verifica si hay max cuotas
-            Integer.parseInt(x.buscarPorId(misCobranzas.idCobranza)[7].toString());
-            
-        }catch(NullPointerException ex){
-            this.jpanel_generarConMaxCuota.setEnabled(false);
-            this.jlbl_maxCuotas.setEnabled(false);this.jlbl_primaTotal.setEnabled(false);
-            this.jtcombo_maxCuota.setEnabled(false);
-            this.jbtn_agregarMaxCuotas.setEnabled(false);
-            this.jtxt_primaTotal.setEnabled(false);
-        }
+       
         
   
         jarea_observaciones.setText(x.buscarObservacionPorPoliza(numPoliza));
@@ -125,18 +121,13 @@ int l=Days.daysBetween(today, fechaVenc).getDays();
   
   }
   //se agrega combobox para updatear estado
-  final JComboBox comboBox = new JComboBox();
-        comboBox.addItem("Pendiente");
-        comboBox.addItem("Cobrado");
-        comboBox.addItem("Ingresado");
-        TableColumn miColumna = tabla.getColumnModel().getColumn(9);
-        miColumna.setCellEditor(new DefaultCellEditor(comboBox));
+
         //fin comboxo updatear estado
         
         //se crean los colores
          PatternPredicate patternPredicate = new PatternPredicate("Pendiente", 9);//condicion pendiente
-        ColorHighlighter red = new ColorHighlighter(patternPredicate, Color.RED,
-                Color.WHITE, null, Color.BLUE);//fin rojo
+        ColorHighlighter red = new ColorHighlighter(patternPredicate, null,
+                null, Color.RED, Color.BLUE);//fin rojo
         patternPredicate = new PatternPredicate("Ingresado", 9);//condicion Ingresado
         ColorHighlighter verde = new ColorHighlighter(patternPredicate, Color.GREEN,
                 null, null, Color.BLUE);//fin verde
@@ -392,7 +383,24 @@ this.setLayout(null);// se centra la ventana
     private void initComponents() {
 
         jScrollPane1 = new javax.swing.JScrollPane();
-        tabla = new org.jdesktop.swingx.JXTable();
+        tabla = new org.jdesktop.swingx.JXTable(){
+            @Override
+            public Class getColumnClass(int column)
+            {
+                for (int row = 0; row < getRowCount(); row++)
+                {
+                    Object o = getValueAt(row, column);
+
+                    if (o != null)
+                    {
+                        return o.getClass();
+                    }
+                }
+
+                return Object.class;
+            }
+
+        };
         jlbl_fechaHoy = new javax.swing.JLabel();
         jpanel_generarConMaxCuota = new javax.swing.JPanel();
         jtxt_primaTotal = new javax.swing.JTextField();
@@ -461,7 +469,7 @@ this.setLayout(null);// se centra la ventana
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, true, false, true, false, false, true, true, true, false, true
+                false, true, false, true, false, false, true, true, true, true, true
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
