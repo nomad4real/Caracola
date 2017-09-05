@@ -8,30 +8,26 @@ package interfaz;
 
 import conexion.conexion;
 import java.awt.Color;
-import java.awt.Frame;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.math.RoundingMode;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 import java.text.DateFormat;
-import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Enumeration;
-import java.util.Properties;
+import java.util.List;
 import javax.swing.AbstractButton;
-import javax.swing.ButtonModel;
-import javax.swing.UIManager;
-import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
-import metodos.DateLabelFormatter;
 import metodos.consultor;
-import net.sourceforge.jdatepicker.JDatePicker;
-import org.jdesktop.swingx.JXDatePicker;
-import org.jdesktop.swingx.JXDialog;
+import net.sourceforge.jdatepicker.impl.JDatePanelImpl;
+import net.sourceforge.jdatepicker.impl.JDatePickerImpl;
+import net.sourceforge.jdatepicker.impl.UtilDateModel;
+
 
 
 /**
@@ -62,7 +58,9 @@ public static String rutCompleto="";
 public static  String[] parts = rutCompleto.split("-");
 public static  int rut=0;
 public static double primaTotal=0;
-
+ UtilDateModel model = new UtilDateModel();
+JDatePanelImpl datePanel = new JDatePanelImpl(model);
+JDatePickerImpl datePicker = new JDatePickerImpl(datePanel);
     /**
      * Creates new form agregarCobranza
      */
@@ -87,9 +85,9 @@ titledBorder.setTitleColor(Color.RED);
 
 
 DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-jXDatePicker1.setFormats(dateFormat);
+//jXDatePicker1.setFormats(dateFormat);
 consultor x= new consultor();
-
+List<String> fullArray = new ArrayList<>();
 try{
     conexion.conectar();
     String strSql="SELECT * from contactos";
@@ -100,6 +98,7 @@ try{
         for (int i = 0; i < 3; i++) {
             if(i==2){
                 this.jcombo_contactos.addItem(objSet.getObject(i+1).toString());
+                fullArray.add(objSet.getObject(i+1).toString());
             }
             
         }
@@ -139,16 +138,30 @@ this.jcombo_maxCuotas.setSelectedIndex(Integer.parseInt(fila[11].toString()));
 //fin inicio clase
 
 
+FilterComboBox j = new FilterComboBox((fullArray));
+j.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+         consultor r = new consultor();
+jtxt_rut.setText(r.buscarRutPorNombre(e.getItem().toString()));
+ String rutCompleto=jtxt_rut.getText();
+ String[] parts = rutCompleto.split("-");
+rutSeleccionado = Integer.parseInt(parts[0]); // 004
+            }
+        });
+this.getContentPane().add(j);
+j.setVisible(true);
+j.setBounds(15, 15, 200, 25);
+this.remove(jcombo_contactos);
+
+
+datePicker.setBounds(26,30,250,40);
+jpanel_fecha_vencimiento.add(datePicker);
+
+      
     }
     
-    public void cambiarNuevoContacto(String nombre ,String rut){
-    this.jcombo_contactos.addItem(nombre);
-    this.jcombo_contactos.setSelectedItem(this.jcombo_contactos.getItemAt(this.jcombo_contactos.getItemCount()-1));
-    this.jtxt_rut.setText(rut);
     
-    
-    
-    }
     
     
   
@@ -185,8 +198,7 @@ this.jcombo_maxCuotas.setSelectedIndex(Integer.parseInt(fila[11].toString()));
         jpane_ramo = new javax.swing.JPanel();
         jcombo_ramo = new javax.swing.JComboBox<>();
         jLabel3 = new javax.swing.JLabel();
-        jPanel5 = new javax.swing.JPanel();
-        jXDatePicker1 = new org.jdesktop.swingx.JXDatePicker();
+        jpanel_fecha_vencimiento = new javax.swing.JPanel();
         jpane_poliza5 = new javax.swing.JPanel();
         jtxt_item = new javax.swing.JTextField();
         jcombo_contactos = new javax.swing.JComboBox<>();
@@ -194,6 +206,7 @@ this.jcombo_maxCuotas.setSelectedIndex(Integer.parseInt(fila[11].toString()));
         jtxt_rut = new javax.swing.JTextField();
         jScrollPane1 = new javax.swing.JScrollPane();
         jtxtArea_observacion_poliza = new org.jdesktop.swingx.JXTextArea();
+        jSeparator1 = new javax.swing.JSeparator();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -246,7 +259,7 @@ this.jcombo_maxCuotas.setSelectedIndex(Integer.parseInt(fila[11].toString()));
                 .addComponent(jradiobtn_hdi)
                 .addGap(12, 12, 12)
                 .addComponent(jradiobtn_liberty)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 51, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 171, Short.MAX_VALUE)
                 .addComponent(jradiobtn_sura)
                 .addGap(27, 27, 27))
         );
@@ -275,7 +288,7 @@ this.jcombo_maxCuotas.setSelectedIndex(Integer.parseInt(fila[11].toString()));
                 .addComponent(jtxt_primaTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(29, 29, 29)
                 .addComponent(jcombo_moneda, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(36, Short.MAX_VALUE))
+                .addContainerGap(139, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -414,23 +427,17 @@ this.jcombo_maxCuotas.setSelectedIndex(Integer.parseInt(fila[11].toString()));
 
         jLabel3.setText("Rut:");
 
-        jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder("Fecha Vencimiento Cuota Inicial"));
+        jpanel_fecha_vencimiento.setBorder(javax.swing.BorderFactory.createTitledBorder("Fecha Vencimiento Cuota Inicial"));
 
-        javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
-        jPanel5.setLayout(jPanel5Layout);
-        jPanel5Layout.setHorizontalGroup(
-            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel5Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jXDatePicker1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(22, 22, 22))
+        javax.swing.GroupLayout jpanel_fecha_vencimientoLayout = new javax.swing.GroupLayout(jpanel_fecha_vencimiento);
+        jpanel_fecha_vencimiento.setLayout(jpanel_fecha_vencimientoLayout);
+        jpanel_fecha_vencimientoLayout.setHorizontalGroup(
+            jpanel_fecha_vencimientoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
         );
-        jPanel5Layout.setVerticalGroup(
-            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel5Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jXDatePicker1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        jpanel_fecha_vencimientoLayout.setVerticalGroup(
+            jpanel_fecha_vencimientoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 44, Short.MAX_VALUE)
         );
 
         jpane_poliza5.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "ITEM", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Microsoft YaHei UI", 1, 11))); // NOI18N
@@ -487,53 +494,64 @@ this.jcombo_maxCuotas.setSelectedIndex(Integer.parseInt(fila[11].toString()));
                             .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jpane_poliza2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel2)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addGap(61, 61, 61)
                                 .addComponent(jcombo_contactos, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addGap(27, 27, 27)
                                 .addComponent(jbtn_agregar_contacto, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(21, 21, 21))
+                                .addGap(4, 4, 4))
                             .addComponent(jpane_ramo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                                 .addComponent(jpane_poliza, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jpane_poliza5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(0, 42, Short.MAX_VALUE))))
+                                .addGap(0, 162, Short.MAX_VALUE))))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jbtn_add)
                         .addGap(84, 84, 84)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                    .addGroup(layout.createSequentialGroup()
                         .addComponent(jButton2)
                         .addGap(89, 89, 89))
                     .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jtxt_rut, javax.swing.GroupLayout.DEFAULT_SIZE, 273, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addGroup(layout.createSequentialGroup()
-                                    .addGap(29, 29, 29)
-                                    .addComponent(jLabel3)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                    .addComponent(jtxt_rut)))
+                            .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(29, 29, 29)
+                                .addComponent(jLabel2))
+                            .addComponent(jpanel_fecha_vencimiento, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 191, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addContainerGap())))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jSeparator1)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jLabel2)
-                        .addComponent(jLabel3)
-                        .addComponent(jtxt_rut, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jbtn_agregar_contacto)
-                    .addComponent(jcombo_contactos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(16, 16, 16)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jbtn_agregar_contacto)
+                            .addComponent(jcombo_contactos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(14, 14, 14))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel3)
+                            .addComponent(jtxt_rut, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)))
+                .addComponent(jLabel2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(1, 1, 1)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jpane_ramo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -544,7 +562,7 @@ this.jcombo_maxCuotas.setSelectedIndex(Integer.parseInt(fila[11].toString()));
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jpanel_fecha_vencimiento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -557,7 +575,7 @@ this.jcombo_maxCuotas.setSelectedIndex(Integer.parseInt(fila[11].toString()));
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jbtn_add)
                     .addComponent(jButton2))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(23, Short.MAX_VALUE))
         );
 
         pack();
@@ -573,7 +591,7 @@ poliza=Integer.parseInt(this.jtxt_poliza.getText());
 item=Integer.parseInt(this.jtxt_item.getText());
 companyName=this.jtbngroup_company.getSelection().getActionCommand();
 company=r.consultarCompany(companyName);//busco el id por nombre de la compañia
-fecha_vencimiento=jXDatePicker1.getDate();
+fecha_vencimiento=(Date)datePicker.getModel().getValue();
 moneda=this.jcombo_moneda.getSelectedItem().toString();
 cuotaMax=Integer.parseInt(this.jcombo_maxCuotas.getSelectedItem().toString());
 monto=Double.parseDouble(this.jtxt_primaTotal.getText());
@@ -621,6 +639,8 @@ this.dispose();
 
     }//GEN-LAST:event_jbtn_addActionPerformed
 
+    
+    
     private void jbtn_addMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jbtn_addMousePressed
         // TODO add your handling code here:
         for (Enumeration<AbstractButton> buttons = this.jtbngroup_company.getElements(); buttons.hasMoreElements();) {
@@ -675,11 +695,7 @@ new misCobranzas().setVisible(true);
     }//GEN-LAST:event_jcombo_ramoItemStateChanged
 
     private void jcombo_contactosItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jcombo_contactosItemStateChanged
- consultor r = new consultor();
-this.jtxt_rut.setText(r.buscarRutPorNombre(evt.getItem().toString()));
- String rutCompleto=this.jtxt_rut.getText();
- String[] parts = rutCompleto.split("-");
-rutSeleccionado = Integer.parseInt(parts[0]); // 004
+ 
 
 
 
@@ -735,9 +751,8 @@ this.dispose();
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
-    private javax.swing.JPanel jPanel5;
     private javax.swing.JScrollPane jScrollPane1;
-    private org.jdesktop.swingx.JXDatePicker jXDatePicker1;
+    private javax.swing.JSeparator jSeparator1;
     private javax.swing.JButton jbtn_add;
     private javax.swing.JButton jbtn_agregar_contacto;
     private javax.swing.JComboBox<String> jcombo_contactos;
@@ -748,6 +763,7 @@ this.dispose();
     private javax.swing.JPanel jpane_poliza2;
     private javax.swing.JPanel jpane_poliza5;
     private javax.swing.JPanel jpane_ramo;
+    private javax.swing.JPanel jpanel_fecha_vencimiento;
     private javax.swing.JRadioButton jradio_emision;
     private javax.swing.JRadioButton jradio_modificacion;
     private javax.swing.JRadioButton jradio_rehabilitacion;

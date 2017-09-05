@@ -1034,8 +1034,24 @@ return fila[0].toString();
     return entrada;
     }
 
-    public int buscarNombrePorRut(String rut) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public boolean buscarNombrePorRut(String rut) {
+        boolean j = false;
+        try{
+            String sql="SELECT rut FROM caracola.contactos where rut="+rut;
+            conexion.conectar();
+            conexion.sentencia = conexion.conn.prepareStatement(sql);
+            ResultSet objSet=conexion.sentencia.executeQuery(sql);
+            
+            while(objSet.next()){
+                for (int i = 0; i < 1; i++) {
+                    j=true;
+                }
+            }
+        }catch(SQLException ex){
+            System.out.println("Error consultar por nombre"+ex);
+        }
+        
+        return j;
     }
 }
 

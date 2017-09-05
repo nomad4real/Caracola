@@ -37,10 +37,8 @@ public class agregarContacto extends javax.swing.JFrame {
                 //         System.exit(0);
                 /////      }
              
-              //       new misCobranzas().setVisible(true);
-          //      e.getWindow().dispose();
-           
-             
+              new misCobranzas().setVisible(true);
+               e.getWindow().dispose();
                 
                  
            
@@ -231,15 +229,20 @@ public class agregarContacto extends javax.swing.JFrame {
         //validar rut;
   
         if(x.validarRut(rut)){
-                  if(x.buscarNombrePorRut(rut)!=0){
+                  if(!x.buscarNombrePorRut(rut.split("-")[0])){
           x.agregarContactos(rut,nombre,telefonos,direccion);
 
             this.dispose();
        
              new agregarCobranza().setVisible(true);
                   }else{
-            JOptionPane.showConfirmDialog(rootPane, "El rut ya existe !!! si continua seran reemplazado los datos");
-        }
+                      
+                          if(JOptionPane.showConfirmDialog(rootPane, "El rut ya existe !!! si continua seran reemplazado los datos")==0){
+       x.agregarContactos(rut,nombre,telefonos,direccion);
+                              new agregarCobranza().setVisible(true);
+       this.dispose();
+                          }
+                      }
    
         }else{
             JOptionPane.showMessageDialog(rootPane, "El rut Ingresado no es Valido");
@@ -262,6 +265,7 @@ public class agregarContacto extends javax.swing.JFrame {
 
     private void jtbn_cancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jtbn_cancelarActionPerformed
 this.dispose();        // TODO add your handling code here:
+new misCobranzas().setVisible(true);
     }//GEN-LAST:event_jtbn_cancelarActionPerformed
     
     /**
