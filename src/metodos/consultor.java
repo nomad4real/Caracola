@@ -46,6 +46,8 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.poi.ss.usermodel.Row;
 import org.jdesktop.swingx.JXTable;
+import org.joda.time.DateTime;
+import org.joda.time.Days;
 
 
 
@@ -487,11 +489,6 @@ return false;
             System.out.println(ex);
         }
     }
-
-    public void updatearContacto(){
-    
-    
-    };
   
    
 
@@ -617,7 +614,30 @@ double ultima= Double.parseDouble(nf.format(ultimaCuota).replace(",", "."));
     
     
     }
-
+    
+    public long buscar_id_por_numPoliza(long numPoliza){
+    long id=0;
+      try{
+             
+            String strSql="SELECT id from cobranzas where poliza="+numPoliza+" group by id";
+            conexion.sentencia=conexion.conn.prepareStatement(strSql);
+            ResultSet objSet=conexion.sentencia.executeQuery(strSql);
+            while(objSet.next()){
+           
+                   id=Long.parseLong(objSet.getObject(0).toString());
+           
+            
+            }
+       
+            
+        } catch (Exception ex) {
+            System.out.println("Error buscar id Cobranza segun numPoliza");
+            System.out.println(ex);
+        }
+    
+    return id;
+    }
+    
     public   Object [] buscarAseguradoPorId(long rut) {
           Object [] fila=new Object [5];
            try{
@@ -647,7 +667,7 @@ double ultima= Double.parseDouble(nf.format(ultimaCuota).replace(",", "."));
      //   ImageIcon errorIcon = new ImageIcon("C:\\madremia\\PRogramaLiberty\\descarga\\no-imagen.png");
 
         Object [] fila=new Object [7];
-ImageIcon icon= new ImageIcon("");
+
            try{
           
           //debe haber un sql que haga todo de aca, pero me da paja buscarlo
@@ -669,20 +689,15 @@ ImageIcon icon= new ImageIcon("");
                                 case 1:fila[i]="Liberty";break;
                                 case 2:fila[i]="SURA";break;
                             } ;break;
-                    
-                       
-            
-                            
+      
                     }
-                    
-                  
-                 
-                   
-                   
-                 
+
                 }
                    modelo.addRow(fila);
-                  modelo.setValueAt(new ImageIcon("C:\\madremia\\PRogramaLiberty\\descarga\\ver_poliza.png"), contador, 5);
+      
+                  
+           modelo.setValueAt(new ImageIcon(calcularPendiente((long)modelo.getValueAt(contador, 2))), contador, 5);
+
                   contador++;
                    }
             
@@ -963,13 +978,16 @@ return itemPolizas;
 return fila;
 
     }
+    
+    
+    
 
     public void insertarObservacionPoliza(long poliza, String observacion) {
      
 
  
      try{
-            String sql="INSERT INTO observaciones_poliza value ("+poliza+",'"+observacion+"')";
+            String sql="INSERT INTO observaciones_poliza value ("+poliza+",'"+observacion+"') ON DUPLICATE KEY UPDATE observaciones='"+observacion+"'";
             conexion.conectar();
             conexion.sentencia = conexion.conn.prepareStatement(sql);
             conexion.sentencia.execute(sql);
@@ -1008,12 +1026,7 @@ return fila[0].toString();
         
     }
     
-    public String[] calcularEstado(){
-    String[] entrada = new String[2];
-    return entrada;
-    }
-
-    public boolean buscarNombrePorRut(String rut) {
+      public boolean buscarNombrePorRut(String rut) {
         boolean j = false;
         try{
             String sql="SELECT rut FROM caracola.contactos where rut="+rut;
@@ -1032,7 +1045,73 @@ return fila[0].toString();
         
         return j;
     }
+    
+    public String calcularPendiente (long numPoliza){
+        String url_icono="";
+        int dias_de_diferencia=0;
+        DateTime  fa = new DateTime();
+            DateTime hoy = new DateTime();
+        try{
+            String sql="SELECT min(fecha_vencimiento) from cobranzas where estado=0 and poliza="+numPoliza;
+            
+            conexion.conectar();
+            conexion.sentencia = conexion.conn.prepareStatement(sql);
+            ResultSet objSet=conexion.sentencia.executeQuery(sql);
+            while(objSet.next()){
+                fa=DateTime.parse(objSet.getObject(1).toString());
+
+                
+            }        
+        }catch(SQLException ex){
+                System.out.println("Error de Calcular Fecha Pendiente Mis Cobranzas");
+                  System.out.println(ex);
+              
+                }
+   
+dias_de_diferencia=hoy.dayOfYear().getDifference(fa);
+          if(fa.isAfterNow()){
+//entonces todavia no ha vencido, comprobar si quedan menos de 15 dias
+if(dias_de_diferencia<(-15)){
+    //por vencer
+   
+ url_icono="C:\\madremia\\PRogramaLiberty\\descarga\\src\\imagenes\\por_vencer.png";
+
+}else{
+
+ url_icono="C:\\madremia\\PRogramaLiberty\\descarga\\src\\imagenes\\al_dia.png";
 }
+}else{
+    if(fa.isBeforeNow()){
+    if(dias_de_diferencia<15&&dias_de_diferencia>0){
+    url_icono="C:\\madremia\\PRogramaLiberty\\descarga\\src\\imagenes\\posible_anulacion.png";
+
+    
+}else{
+      
+    url_icono="C:\\madremia\\PRogramaLiberty\\descarga\\src\\imagenes\\anulada.png";
+ 
+    }
+
+}else{
+  
+  url_icono="vence_hoy.jpg";
+
+
+    }
+     
+            
+            
+   
+     
+        
+    }
+return url_icono;
+    }
+    
+}
+    
+    
+
 
 
 
