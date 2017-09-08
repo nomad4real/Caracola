@@ -475,6 +475,9 @@ return false;
         
   
   String split[]=rut.split("-");
+  if(split[1].equals("k")){
+  split[1]="0";
+  }
     
      try{
             String strSql="insert into contactos (rut,dv,nombre, telefonos,direccion) VALUES ("+Integer.parseInt(split[0])+","+Integer.parseInt(split[1])+",'"+nombre+"','"+telefonos+"','"+direccion+"') ON DUPLICATE KEY UPDATE  nombre='"+nombre+"', telefonos='"+telefonos+"', direccion='"+direccion+"'";
@@ -618,7 +621,7 @@ double ultima= Double.parseDouble(nf.format(ultimaCuota).replace(",", "."));
     public long buscar_id_por_numPoliza(long numPoliza){
     long id=0;
       try{
-             
+             conexion.conectar();
             String strSql="SELECT id from cobranzas where poliza="+numPoliza+" group by id";
             conexion.sentencia=conexion.conn.prepareStatement(strSql);
             ResultSet objSet=conexion.sentencia.executeQuery(strSql);
@@ -628,7 +631,7 @@ double ultima= Double.parseDouble(nf.format(ultimaCuota).replace(",", "."));
            
             
             }
-       
+       conexion.desconectar();
             
         } catch (Exception ex) {
             System.out.println("Error buscar id Cobranza segun numPoliza");
@@ -694,10 +697,11 @@ double ultima= Double.parseDouble(nf.format(ultimaCuota).replace(",", "."));
 
                 }
                    modelo.addRow(fila);
-      
+      modelo.setValueAt(calcularPendiente((long)modelo.getValueAt(contador, 2)), contador, 5);
+                 
                   
-           modelo.setValueAt(new ImageIcon(calcularPendiente((long)modelo.getValueAt(contador, 2))), contador, 5);
 
+//modelo.setValueAt(new ImageIcon("C:\\madremia\\PRogramaLiberty\\descarga\\no-imagen.png"),contador,5);
                   contador++;
                    }
             
@@ -788,7 +792,7 @@ double ultima= Double.parseDouble(nf.format(ultimaCuota).replace(",", "."));
   
 
     public String consultarFechaInicioPorId(int idCobranza) {
-;
+
     String fecha_inicial="";
            try{
           
@@ -1047,7 +1051,8 @@ return fila[0].toString();
     }
     
     public String calcularPendiente (long numPoliza){
-        String url_icono="";
+     
+        String estado="4";
         int dias_de_diferencia=0;
         DateTime  fa = new DateTime();
             DateTime hoy = new DateTime();
@@ -1074,27 +1079,27 @@ dias_de_diferencia=hoy.dayOfYear().getDifference(fa);
 if(dias_de_diferencia<(-15)){
     //por vencer
    
- url_icono="C:\\madremia\\PRogramaLiberty\\descarga\\src\\imagenes\\por_vencer.png";
+ estado="0";
 
 }else{
 
- url_icono="C:\\madremia\\PRogramaLiberty\\descarga\\src\\imagenes\\al_dia.png";
+ estado="0";
 }
 }else{
     if(fa.isBeforeNow()){
-    if(dias_de_diferencia<15&&dias_de_diferencia>0){
-    url_icono="C:\\madremia\\PRogramaLiberty\\descarga\\src\\imagenes\\posible_anulacion.png";
+    if(dias_de_diferencia<15&&dias_de_diferencia>=0){
+    estado="2";
 
     
 }else{
       
-    url_icono="C:\\madremia\\PRogramaLiberty\\descarga\\src\\imagenes\\anulada.png";
+    estado="3";
  
     }
 
 }else{
   
-  url_icono="vence_hoy.jpg";
+  estado="4";
 
 
     }
@@ -1105,7 +1110,7 @@ if(dias_de_diferencia<(-15)){
      
         
     }
-return url_icono;
+return estado;
     }
     
 }
