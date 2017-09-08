@@ -305,33 +305,59 @@ this.jlbl_valor_prima.setText(String.valueOf(sumador));
          this.jtxt_totalPendientes.setText(String.valueOf(listadoPendientes.size()));
            this.jtxt_totalIngresadas.setText(String.valueOf(listadoIngresados.size())); 
 //LocalDate currentDate = LocalDate.parse("22/02/2017");//localFecha.get(0)
-if(!(listadoIngresados.isEmpty())){////si  esta al dia no se eliminan defaults
-    this.jlbl_fechaPendiente.setText("Ninguna");//
-    this.jtxt_cuota_pendiente.setText("Al Dia");
-    this.jtxt_posesivo.setText("");
-    this.jtxt_cuota_pendiente.setForeground(Color.GREEN);
-     this.jtxt_maxCuotas.setText("");
-}else{
-    if(!(listadoCobrados.isEmpty())){
-       if(!(listadoPendientes.isEmpty())){
-         this.jlbl_fechaPendiente.setText(listadoPendientes.get(0)[0]);//se pone la primera cuota pendiente
 
-//se pone la primera cuota pendiente
-       }
-    ;
-    }else{
-
-    if(!(listadoPendientes.isEmpty())){
-       this.jlbl_fechaPendiente.setText(listadoPendientes.get(0)[0]);//se pone la primera cuota pendiente
-
-        this.jtxt_cuota_pendiente.setText(listadoPendientes.get(0)[1]);//se pone la primera cuota pendiente
-
-    }else{      
+String resultado[]=x.calcularPendiente(numPoliza);
+switch(resultado[0]){
+    
+    case "0"://Al dia
+        jlbl_vigencia.setText("Al Dia");
+        jlbl_vigencia.setForeground(Color.GREEN);
+        jarea_info.setText("Al Dia:\nLa cuota todavia le faltan "+resultado[1]+" Dias.");
+        jarea_info.setForeground(Color.GREEN);      
+        this.jtxt_cuota_pendiente.setText(resultado[2]);
+        
+    case "1"://Por vencer
+        jlbl_vigencia.setText("Por Vencer");
+        jlbl_vigencia.setForeground(Color.YELLOW);
+        jarea_info.setForeground(Color.YELLOW);
+        jarea_info.setText("Por Vencer:\nLa cuota PENDIENTE vencera PRONTO en "+resultado[1]+" Dias.");
+        this.jlbl_fechaPendiente.setText(resultado[3]);
+        this.jtxt_cuota_pendiente.setText(resultado[2]);
+        this.jtxt_cuota_pendiente.setForeground(Color.YELLOW);
+        this.jlbl_dias_diferencia.setText(resultado[1]);
+        ;break;
+    case "2"://Vencida Por Anularse
+        jlbl_vigencia.setText("Vencida");
+        jlbl_vigencia.setForeground(Color.RED);
+        jarea_info.setText("Por Anularse:\nLa cuota PENDIENTE se anulara en "+resultado[1]+" Dias.");
+        jarea_info.setForeground(Color.RED);
+        this.jlbl_fechaPendiente.setText(resultado[3]);
+        this.jtxt_cuota_pendiente.setText(resultado[2]);
+        this.jtxt_cuota_pendiente.setForeground(Color.RED);
+         this.jlbl_dias_diferencia.setText(resultado[1]);
+    case "3"://Anulada
+        jlbl_vigencia.setText("Anulada");
+        jlbl_vigencia.setForeground(new Color(153, 0, 153));
+        jarea_info.setText("Anulada:\nLa cuota PENDIENTE deberia estar ANULADA ya que tiene mas "+resultado[1]+" desde su vencimiento");
+        jarea_info.setForeground(new Color(153, 0, 153));
+        this.jlbl_fechaPendiente.setText(resultado[3]);
+        this.jtxt_cuota_pendiente.setText(resultado[2]);
+        this.jtxt_cuota_pendiente.setForeground(new Color(153, 0, 153));
+         this.jlbl_dias_diferencia.setText(resultado[1]);
+    case "4"://VENCE HOY
+        jlbl_vigencia.setText("Esta Poliza Vence HOY");
+        jlbl_vigencia.setForeground(Color.PINK);
+        jarea_info.setText("Esta Poliza Vence HOY!!");
+        jarea_info.setForeground(Color.PINK);
+        this.jlbl_fechaPendiente.setText(resultado[3]);
+        this.jtxt_cuota_pendiente.setText(resultado[2]);
+        this.jtxt_cuota_pendiente.setForeground(Color.PINK);//VEnce hoy
+         this.jlbl_dias_diferencia.setText(resultado[1]);
+        
+        
+}
  
-    }
-    }
- 
-}    
+//default en caso de contactos
 ArrayList<String> itemPolizas = x.buscarNumPolizaxContacto(r[3].toString());
         for (int i = 0; i < itemPolizas.size(); i++) {
             this.jpolizas.addItem(itemPolizas.get(i));  
@@ -366,39 +392,7 @@ if(tabla.getValueAt(0, 5).toString().isEmpty()){
         jpanel_generarConMaxCuota.setVisible(false);
 }//muestra la generacion de cuotas si es que no hay maxcuota
 
-String fechaObtenida=String.valueOf(this.jlbl_fechaPendiente.getText());
-int dias_de_diferencia=0;
-if(fechaObtenida.equals("Ninguna")){
-    //entonces siendo al dia se muestran observaciones
-    this.jarea_info.setText("Poliza Al dia, Mostrar Resumen");
-}else{
-   DateTime fa = dtf.parseDateTime(fechaObtenida);//fecha_pendientes
-DateTime hoy = DateTime.now(); 
-dias_de_diferencia=hoy.dayOfYear().getDifference(fa);
-if(fa.isAfterNow()){
-//entonces todavia no ha vencido, comprobar si quedan menos de 15 dias
-if(dias_de_diferencia<(-15)){
-    //por vencer
- jarea_info.setText("Por Vencer: La cuota PENDIENTE vencera en "+hoy.dayOfYear().getDifference(fa)*-1+" Dias.");
-}else{
-     jarea_info.setText("Pendiente: Quedan "+dias_de_diferencia*-1+" Dias para el vencimiento");
-}
- jlbl_vigencia.setText("Posible Anulacion");
- jlbl_vigencia.setForeground(Color.ORANGE);
- jarea_info.setText("Todavia Quedan "+dias_de_diferencia*-1+" Dias para el \\ln vencimiento de esta poliza");
-}else{
-    
-    if(fa.isBeforeNow()){
-    if(dias_de_diferencia<15){
-    this.jarea_info.setText("Por Anulacion : La poliza vencio hace "+dias_de_diferencia+" dias.");
-}else{
-      
-       this.jarea_info.setText("La poliza esta anulada con "+dias_de_diferencia+" dias de atraso"); 
-    }
 
-}
-     }
-}
 
 
 final AbstractAction escapeAction = new AbstractAction() {
@@ -408,7 +402,7 @@ final AbstractAction escapeAction = new AbstractAction() {
     public void actionPerformed(ActionEvent ae) {
         
          new misCobranzas().setVisible(true);
-
+         
         dispose();
        
     }
@@ -481,6 +475,8 @@ this.setLayout(null);// se centra la ventana
         jtxt_posesivo = new javax.swing.JLabel();
         jtxt_maxCuotas = new javax.swing.JLabel();
         jLabel14 = new javax.swing.JLabel();
+        jLabel17 = new javax.swing.JLabel();
+        jlbl_dias_diferencia = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jtxt_nombre = new javax.swing.JLabel();
@@ -683,6 +679,13 @@ this.setLayout(null);// se centra la ventana
         jLabel14.setForeground(new java.awt.Color(0, 204, 204));
         jLabel14.setText("Cuota Actual :");
 
+        jLabel17.setFont(new java.awt.Font("Eurostile LT Std", 1, 18)); // NOI18N
+        jLabel17.setForeground(new java.awt.Color(0, 204, 204));
+        jLabel17.setText("Dias de Atraso :");
+
+        jlbl_dias_diferencia.setFont(new java.awt.Font("Avenir LT Std 35 Light", 1, 18)); // NOI18N
+        jlbl_dias_diferencia.setText("0");
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -694,9 +697,6 @@ this.setLayout(null);// se centra la ventana
                         .addGap(76, 76, 76)
                         .addComponent(jtxt_fechaPrimaPendiente, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGap(365, 365, 365))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel10)
-                        .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel12)
@@ -718,19 +718,27 @@ this.setLayout(null);// se centra la ventana
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGap(25, 25, 25)
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
-                                        .addComponent(jtxt_cuota_pendiente)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(jtxt_posesivo)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(jtxt_maxCuotas))
                                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                         .addComponent(jfinal, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addComponent(jinicio, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(jlbl_fechaPendiente, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                                        .addComponent(jlbl_fechaPendiente, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
+                                        .addComponent(jtxt_cuota_pendiente)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(jlbl_dias_diferencia)
+                                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                                .addComponent(jtxt_posesivo)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                                .addComponent(jtxt_maxCuotas)))))))
                         .addGap(159, 159, 159)
                         .addComponent(jbtn_company)
-                        .addGap(36, 36, 36))))
+                        .addGap(36, 36, 36))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel10)
+                            .addComponent(jLabel17))
+                        .addGap(0, 0, Short.MAX_VALUE))))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -763,7 +771,15 @@ this.setLayout(null);// se centra la ventana
                         .addComponent(jtxt_cuota_pendiente)
                         .addComponent(jLabel14)
                         .addComponent(jtxt_posesivo)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel17)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jlbl_dias_diferencia)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addComponent(jtxt_fechaPrimaPendiente))
         );
 
@@ -1257,6 +1273,7 @@ this.dispose();
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
+    private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel21;
@@ -1285,6 +1302,7 @@ this.dispose();
     private org.jdesktop.swingx.JXButton jbtn_editarObservaciones;
     private javax.swing.JLabel jfinal;
     private javax.swing.JLabel jinicio;
+    private javax.swing.JLabel jlbl_dias_diferencia;
     private javax.swing.JLabel jlbl_direccion;
     private javax.swing.JLabel jlbl_fechaHoy;
     private javax.swing.JLabel jlbl_fechaPendiente;
