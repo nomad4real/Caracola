@@ -8,13 +8,13 @@ package metodos;
 import com.mysql.jdbc.Connection;
 import com.mysql.jdbc.PreparedStatement;
 import conexion.conexion;
-import static interfaz.agregarCobranza.cuotaMax;
-import static interfaz.agregarCobranza.monto;
 import java.awt.Button;
 import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DnDConstants;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -37,12 +37,18 @@ import javax.swing.ComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
+import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.DefaultTableModel;
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
+import org.apache.poi.hssf.usermodel.HSSFDataFormat;
+import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.poi.ss.usermodel.Row;
 import org.jdesktop.swingx.JXTable;
@@ -162,172 +168,108 @@ public void insertarCambiosObservaciones(String valorNuevo, long id){
   return fila;
     }
     
-public void extraerExcelHdi(String dirArchivo){
+
+public void extraerExcelHdi_Final(String dirArchivo){
     
-try{
-    
+    try{
+        
         System.out.println("1.-Importanto Excel HDI a Tabla...........................................");
-             
-            FileInputStream input = new FileInputStream(dirArchivo);
+        
+        FileInputStream input = new FileInputStream(dirArchivo);
+        
+        POIFSFileSystem fs = new POIFSFileSystem( input );
+        HSSFWorkbook wb = new HSSFWorkbook(fs);
+        HSSFSheet sheet = wb.getSheetAt(0);
+        Row row;
+        for(int i=1; i<=sheet.getLastRowNum(); i++){
             
-            POIFSFileSystem fs = new POIFSFileSystem( input );
-            HSSFWorkbook wb = new HSSFWorkbook(fs);
-            HSSFSheet sheet = wb.getSheetAt(0);
-            Row row;
-             String sqlBorrar="DELETE FROM listadoNuevo";
-             conexion.conectar();
-        conexion.sentencia=conexion.conn.prepareStatement(sqlBorrar);
-               conexion.sentencia.execute(sqlBorrar);
-          
-              
-            for(int i=1; i<=sheet.getLastRowNum(); i++){
-              
-                row = sheet.getRow(i);
-                
-                String ramo =row.getCell(0).getStringCellValue();
-                int poliza =(int)row.getCell(1).getNumericCellValue();
-                int item =(int)row.getCell(2).getNumericCellValue();
-                String rut = row.getCell(3).getStringCellValue();
-                String nombre = row.getCell(4).getStringCellValue();
-                String tipoDoc = row.getCell(5).getStringCellValue();               
-                int cuota =(int)row.getCell(6).getNumericCellValue();
-               // int maxCuota=(int)row.getCell(7).getNumericCellValue();
-                double monto = (double) row.getCell(7).getNumericCellValue();
-                String moneda = row.getCell(8).getStringCellValue();
-                java.util.Date fecha_vencimiento = row.getCell(9).getDateCellValue();
-                java.sql.Date sqlDate = new java.sql.Date(fecha_vencimiento.getTime());
-                String estado = row.getCell(10).getStringCellValue(); 
-                
-                int tipo_documento=0;
-                int company=0;
-                String str_company="HDI";
-                  int estadoindex=0;
-                
-                
-                 if(tipoDoc.equals("Rehabilitación")){
-                tipo_documento=2;
-                }else{
-                     if(tipoDoc.equals("Modificacion")){
-                     tipo_documento=1;
-                     }else{
-                         tipo_documento=0;
-                     }
-                 }
-                 if(str_company.equals("HDI")){
-                 company=0;
-                 }else{
-                     if(str_company.equals("Liberty")){
-                       company=1;
-                     }else{
-                         //no hay sura...todavia.
-                     }
-                   
-                      if(estado.equals("PENDIENTE")){
-                 estadoindex=0;
-                 }else{
-                     if(estado.equals("Cobrado")){
-                       estadoindex=1;
-                     }else{
-                        estadoindex=2;
-                     }
-                      }
-                     
-                 }
-                 
-                 //aprendi a aanotar:-->>> Se genera la ID FINAL de la FILA.
-                 // es numero poliza,item,cuota,tipo_Doc,y compañia los mismo con liberty
-                 //se añade una ademas digito final. 1-2-3 Represeanta 1.Libertty, 2.-HDI 3.-Sura
-                String id=String.valueOf(poliza)+String.valueOf(item)+String.valueOf(cuota)+tipo_documento+String.valueOf(company);
-                id=id.trim();
-              
+            row = sheet.getRow(i);
+if(!(row.getCell(6).toString().equals(""))){
+            //Datos sacados del excel
+            String ramo =row.getCell(0).getStringCellValue();                  //0
+            long poliza =Long.parseLong(row.getCell(1).getStringCellValue().split("-")[2]);  //1 poliza
+            int item=Integer.parseInt(row.getCell(1).getStringCellValue().split("-")[3]);     //1  item
+            String rut = row.getCell(2).getStringCellValue();                   //2
+            String nombre = row.getCell(3).getStringCellValue();           //3
+            String moneda=row.getCell(5).getStringCellValue();//5
+            java.util.Date fecha_vencimiento_inicial = row.getCell(6).getDateCellValue(); //6echa inicial
+            int cantidad_cuotas=(int)row.getCell(7).getNumericCellValue();//7cantidad de cuotas
+            double prima_total_cuotas=(double)row.getCell(8).getNumericCellValue(); //8 prima sumando todas las cuotas
+            java.sql.Date sqlDate = new java.sql.Date(fecha_vencimiento_inicial.getTime());//fecha convertida a sql date
+            //fin extraccion excel
             
-               long idFinal=Long.parseLong(id);
-               
-               //    int idFinal=Integer.parseInt(id);
-               String digitoVerificador=String.valueOf(rut);
-               String[] parts = digitoVerificador.split("-");
-               String idRut = parts[0]; // 004
-               String verificador = parts[1]; // 034556
-               String sqlContacto="INSERT IGNORE INTO contactos (rut,dv,nombre) values ("+idRut+",'"+verificador+"','"+nombre+"')";
-               conexion.sentencia=conexion.conn.prepareStatement(sqlContacto);
-               conexion.sentencia.execute(sqlContacto);                                                                                                                                                                                                                                                         //ON DUPLICATE KEY UPDATE cuota=values(cuota), estado=values(estado)
-               String sql = "INSERT INTO listadoNuevo (id,ramo,poliza,item,tipoDoc,cuota,monto,moneda,fecha_vencimiento,estado,company,fk_idContacto) VALUES ('"+idFinal+"','"+ramo+"','"+poliza+"','"+item+"',"+tipo_documento+",'"+cuota+"','"+monto+"','"+moneda+"','"+sqlDate+"',"+estadoindex+",0,"+idRut+") ;";              
-               conexion.sentencia=conexion.conn.prepareStatement(sql);
-               conexion.sentencia.execute(sql);
-               
-               
-               
-               
+            //hay que validar al contacto crear o ignorar si es igual
+            
+            if(cantidad_cuotas==0){ //se omite la fila, si es que no hay fecha ni cantidad cuotas
+           
+            }else{ 
+            this.insertarContacto(rut, nombre);
+            insertarPoliza(ramo, 0, poliza, item, 0, sqlDate, moneda,cantidad_cuotas,Integer.parseInt(rut.split("-")[0]),prima_total_cuotas);
+                    System.out.println(nombre);
             }
-          
-            conexion.desconectar();
-            System.out.println("2.-EXCEL IMPORTADO A TABLA.");
-            consultor consulta = new consultor();
-             if(consulta.agregarMorosos()){ //si es diferente elimina, ahora que 
-                System.out.println("Clientes morosos Fueron Agregados");
-                
-            }else{
-                System.out.println("Ningun moroso nuevo fue agregado.");
-            }
-            if(consulta.actualizarPagados()){ //si es diferente elimina, ahora que 
-                System.out.println("Clientes con Pagos Ingresados Actualizados");
-                
-            }else{
-                System.out.println("No se actualizo ningun Cliente");
-            }
-        //Elimina las diferencias          
+           
             
-            //Empieza UNION de archivos
-      
-            
-            
-        }catch(SQLException ex){
-            System.out.println(ex);
-        }catch(IOException ioe){
-            System.out.println(ioe);
-        }catch(Exception ex){
-        System.out.println(ex);
         }
-
-
-
+        }
+    }catch(IOException ioe){
+        System.out.println(ioe);
+    }catch(Exception ex){
+        System.out.println("Error buscar Excel "+ex.fillInStackTrace());
+    }
+    
+    
+    
 }
 
-    public void insertarCambiosCuotas(String valorNuevo, long id) {
-      try{
-            String strSql="update cobranzas SET maxCuota="+valorNuevo+" where id = "+id;
-            conexion.conectar();
-            conexion.sentencia = conexion.conn.prepareStatement(strSql);
-            conexion.sentencia.execute(strSql);
-            conexion.desconectar();
-       
-            
-        } catch (Exception ex) {
-            System.out.println("Error al insertar Max Cuotas");
-            System.out.println(ex);
-        }
+public void insertarCambiosCuotas(String valorNuevo, long id) {
+    try{
+        String strSql="update cobranzas SET maxCuota="+valorNuevo+" where id = "+id;
+        conexion.conectar();
+        conexion.sentencia = conexion.conn.prepareStatement(strSql);
+        conexion.sentencia.execute(strSql);
+        conexion.desconectar();
+        
+        
+    } catch (Exception ex) {
+        System.out.println("Error al insertar Max Cuotas");
+        System.out.println(ex);
+    }
+}
+
+public void insertarContacto(String rut, String nombre){
+    String dv=rut.split("-")[1];
+    if(dv.equals("K")){
+    dv="0";
+    }
+ try{  
+ 
+        String strSql="insert into contactos (rut,dv,nombre) VALUES ("+Integer.parseInt(rut.split("-")[0])+","+Integer.parseInt(dv)+",'"+nombre+"') ON DUPLICATE KEY UPDATE  rut="+Integer.parseInt(rut.split("-")[0]);
+        conexion.conectar();
+        conexion.sentencia = conexion.conn.prepareStatement(strSql);
+        conexion.sentencia.execute(strSql);
+        conexion.desconectar();
+        
+        
+    } catch (Exception ex) {
+        System.out.println("Error al insertar Contacto");
+        System.out.println(ex);
     }
 
-public boolean alertaRoja(Date fecha_vencimiento){
-Date fecha_actual=(Date) Calendar.getInstance().getTime();
-  
-    
-    
-return false;
 }
 
-    public void agregarCuotas(int totalCuotas,long id) {
-      try{
-          
-          //debe haber un sql que haga todo de aca, pero me da paja buscarlo
-            String sql="select poliza from cobranzas where id="+id;
-            conexion.conectar();
-            conexion.sentencia = conexion.conn.prepareStatement(sql);
-            ResultSet objSet=conexion.sentencia.executeQuery(sql);
-            String poliza="";
 
-             while(objSet.next()){
-              poliza=objSet.getObject(1).toString();
+public void agregarCuotas(int totalCuotas,long id) {
+    try{
+        
+        //debe haber un sql que haga todo de aca, pero me da paja buscarlo
+        String sql="select poliza from cobranzas where id="+id;
+        conexion.conectar();
+        conexion.sentencia = conexion.conn.prepareStatement(sql);
+        ResultSet objSet=conexion.sentencia.executeQuery(sql);
+        String poliza="";
+        
+        while(objSet.next()){
+            poliza=objSet.getObject(1).toString();
                 }
             String strSql="update cobranzas SET maxCuota="+totalCuotas+" where poliza ='"+poliza+"'";
             conexion.conectar();
@@ -362,74 +304,110 @@ return false;
          
     }
     
-    public void insertarCobranza(String ramo, int tipoDoc, long poliza, int item, int company, Date fecha_vencimiento, String moneda, int cuotaMax, double monto, int contacto,double primaTotal) {
-       //hay que insertar el mes inicial despues añadir
-         SimpleDateFormat formater = new SimpleDateFormat("yyyy/MM/dd");//se toma la fecha y se añade un mes despues
-                Calendar c = Calendar.getInstance();
-        for(int i=1;i<=cuotaMax;i++){
-            if(i==cuotaMax){
-       //la ultima fila tiene la diferencia
-       //aca se pone la diferencia si hay mas decimales que causen diferencia
-    monto=this.calcularUltimaCuota(primaTotal, cuotaMax);
-       }
+    public void insertarPoliza(String ramo, int tipoDoc, long poliza, int item, int company, Date fecha_vencimiento, String moneda, int cantidad_cuotas, int rut_id,double primaTotal) {
+        //Preapracion de variables
+        SimpleDateFormat formater = new SimpleDateFormat("yyyy/MM/dd");
+        Calendar c = Calendar.getInstance();
+        c.setTime(fecha_vencimiento);
+        Double [] listado_cuotas=calcularUltimaCuota(primaTotal, cantidad_cuotas);
+        
+        for (int i = 1; i <= cantidad_cuotas; i++) {
+            fecha_vencimiento=c.getTime();
+            String idFinal=String.valueOf(poliza)+String.valueOf(item)+String.valueOf(i)+tipoDoc+String.valueOf(company);
+            idFinal=idFinal.trim();//se crea la id unica compuesta por poliza,item,cuota,tipoDoc,compañia
             try{
                 
-               
-                fecha_vencimiento=c.getTime();
-                c.setTime(fecha_vencimiento);
+                String strSql="insert into cobranzas (id,ramo,tipoDoc,poliza,item,company,fecha_vencimiento,moneda,cuota,maxCuota,monto,fk_idContacto) values ("+idFinal+",'"+ramo+"',"+tipoDoc+","+poliza+","+item+","+company+",'"+formater.format(fecha_vencimiento)+"','"+moneda+"',"+i+","+cantidad_cuotas+","+listado_cuotas[i-1]+","+rut_id+") ON DUPLICATE KEY UPDATE cuota="+i+", maxCuota="+cantidad_cuotas+", fecha_vencimiento='"+formater.format(fecha_vencimiento)+"'";//ON DUPLICATE KEY UPDATE cuota=values(cuota), estado=values(estado)
                 c.add(Calendar.MONTH, 1);
-                String idFinal=String.valueOf(poliza)+String.valueOf(item)+String.valueOf(i)+tipoDoc+String.valueOf(company);
-                idFinal=idFinal.trim();//se crea la id unica compuesta por poliza,item,cuota,tipoDoc,compañia
-                String strSql="insert into cobranzas (id,ramo,tipoDoc,poliza,item,company,fecha_vencimiento,moneda,cuota,maxCuota,monto,fk_idContacto) values ("+idFinal+",'"+ramo+"',"+tipoDoc+","+poliza+","+item+","+company+",'"+formater.format(fecha_vencimiento)+"','"+moneda+"',"+i+","+cuotaMax+","+monto+","+contacto+") ON DUPLICATE KEY UPDATE cuota="+i+", maxCuota="+cuotaMax+", fecha_vencimiento='"+formater.format(fecha_vencimiento)+"'";//ON DUPLICATE KEY UPDATE cuota=values(cuota), estado=values(estado)
                 conexion.conectar();
                 conexion.sentencia = conexion.conn.prepareStatement(strSql);
                 conexion.sentencia.execute(strSql);
-              conexion.desconectar();
-              
-            
-        } catch (SQLException ex) {
-            System.out.println("Error al Nueva Cobranza con max Cuotas");
-            System.out.println(ex);
+                conexion.desconectar();
+                
+            } catch (SQLException ex) {
+                System.out.println("Error insertarCobranza SQL :"+ex);
+                
+            } 
         }
-        
-        }
-        
     }
-
-    public void insertarCobranzaSinMaxCuota(long id,String ramo, int tipoDoc, int poliza, int item, int company, java.util.Date fecha_vencimiento, String moneda, int cuotaInicial, double monto, int contacto) {
-    try{
-          SimpleDateFormat formater = new SimpleDateFormat("yyyy/MM/dd");
-            //inserta nueva fila si el id generado es igual entonces updatea la fila.
-        String idFinal=String.valueOf(poliza)+String.valueOf(item)+String.valueOf(cuotaInicial)+tipoDoc+String.valueOf(company);
-                idFinal=idFinal.trim();
-            String strSql="insert into cobranzas (id,ramo,tipoDoc,poliza,item,company,fecha_vencimiento,moneda,cuota,maxCuota,monto,fk_idContacto) values ("+idFinal+",'"+ramo+"',"+tipoDoc+","+poliza+","+item+","+company+",'"+formater.format(fecha_vencimiento)+"','"+moneda+"',"+cuotaInicial+","+cuotaMax+","+monto+","+contacto+") ON DUPLICATE KEY UPDATE cuota="+cuotaInicial+", maxCuota="+cuotaMax;//ON DUPLICATE KEY UPDATE cuota=values(cuota), estado=values(estado)
-              System.out.println(strSql);
-            conexion.conectar();
-            conexion.sentencia = conexion.conn.prepareStatement(strSql);
-            conexion.sentencia.execute(strSql);
-            conexion.desconectar();
-       
-       
-            
-        } catch (Exception ex) {
-            System.out.println("Error al Nueva Cobranza con max Cuotas");
-            System.out.println(ex);
-        }
     
-    }
+    public List<Double> generar_listado_cuotas (double prima_total, int cantidad_cuotas){
+        List<Double> listaCuotas = new ArrayList();
+        
+        try{
+            NumberFormat nf= NumberFormat.getInstance();
+            nf.setMaximumFractionDigits(2);
+            nf.setMinimumFractionDigits(2);
+            nf.setRoundingMode(RoundingMode.HALF_UP);
+            BigDecimal decima_cant_cuotas=new BigDecimal(cantidad_cuotas);
+            BigDecimal decima_prima_total = new BigDecimal(prima_total);
+            BigDecimal modBig = decima_prima_total.remainder(decima_cant_cuotas);
+            BigDecimal cuotas= decima_prima_total.divide(decima_cant_cuotas, 2, RoundingMode.HALF_UP);
+            BigDecimal valorTotal=cuotas.multiply(new BigDecimal(cantidad_cuotas));
+            nf.format(decima_prima_total);
+            nf.format(decima_prima_total);
+            BigDecimal diferencia_totales=decima_prima_total.subtract(valorTotal);
+            for (int i = 1; i <= cantidad_cuotas; i++) {
+                if(Double.parseDouble(diferencia_totales.toString())==0.00&&i==cantidad_cuotas){//si la diferencia es 0
+                    //insertar cobranza iteracion
+                    
+                }else{//
+                    
+                    
+                }
+            }
+   
+    
 
+    }catch(Exception ex){
+        System.out.println("Error Calcular Listado de Cuotas"+ex);
+    }
+        
+        
+        
+        return listaCuotas;
+    }
+    
+    public Double[] calcularUltimaCuota(double prima_total, int cantidad_cuotas) {
+        NumberFormat nf= NumberFormat.getInstance();nf.setMaximumFractionDigits(2);nf.setMinimumFractionDigits(2);nf.setRoundingMode(RoundingMode.HALF_UP);//se inicio el formater
+        BigDecimal decima_cant_cuotas=new BigDecimal(cantidad_cuotas);
+        BigDecimal decima_prima_total = new BigDecimal(prima_total);
+        nf.format(decima_prima_total);
+        nf.format(decima_cant_cuotas);
+        double mod_normal=prima_total%cantidad_cuotas;
+        BigDecimal modBig = decima_prima_total.remainder(decima_cant_cuotas);
+        String resto_division=nf.format(modBig);
+        BigDecimal cuotas= decima_prima_total.divide(decima_cant_cuotas, 2, RoundingMode.HALF_UP);
+        nf.format(cuotas);
+        double cuotas_normal=Double.parseDouble(cuotas.toString());
+        double  ultimaCuota= ((cuotas_normal*(cantidad_cuotas-1))-prima_total)*-1;
+        Double[] array_cuotas = new Double[cantidad_cuotas];
+        for (int i = 0; i < cantidad_cuotas; i++) {
+
+            array_cuotas[i]=Double.parseDouble(cuotas.toString().replace(",", "."));
+   
+        }
+        if(!(resto_division.equals("0.00"))){//entonces todas las cuotas son iguales
+            BigDecimal uc = new BigDecimal(ultimaCuota);           
+            array_cuotas[cantidad_cuotas-1]=Double.parseDouble(nf.format(uc).replace(".", "").replace(",", "."));
+
+        }
+     
+        
+    return array_cuotas;
+}
     public int consultarTipoDoc(String tipoDoc) {
         int tipoDocInt=0;
-          if(tipoDoc.equals("Rehabilitación")){
-                tipoDocInt=2;
-                }else{
-                     if(tipoDoc.equals("Modificacion")){
-                     tipoDocInt=1;
-                     }else{
-                         tipoDocInt=0;
-                     }
-                 }
-          return tipoDocInt;
+        if(tipoDoc.equals("Rehabilitación")){
+            tipoDocInt=2;
+        }else{
+            if(tipoDoc.equals("Modificacion")){
+                tipoDocInt=1;
+            }else{
+                tipoDocInt=0;
+            }
+        }
+        return tipoDocInt;
     }
 
     public int consultarCompany(String companyName) {
@@ -541,64 +519,31 @@ return validacion;
     }
 
 
-
-
-public void limpiarPoliza(int numPoliza){
-    
+public Double calcularCuotas(Double PrimaTotal, int cantidad_cuotas) {
+    double cuota=0.0;
     try{
-             
-            String strSql="DELETE FROM morosos WHERE poliza="+numPoliza;
-            conexion.conectar();
-            conexion.sentencia = conexion.conn.prepareStatement(strSql);
-            conexion.sentencia.execute(strSql);
-            conexion.desconectar();
-       
-            
-        } catch (Exception ex) {
-            System.out.println("Error al Aliminar Polizas");
-            System.out.println(ex);
-        }
-    
-    }
-
-public Double calcularCuotas(Double PrimaTotal, int MaxCuotas) {
-    NumberFormat nf= NumberFormat.getInstance();
-    nf.setMaximumFractionDigits(2);
-    nf.setMinimumFractionDigits(2);
-    nf.setRoundingMode(RoundingMode.HALF_UP);
-    BigDecimal primaTotal = new BigDecimal(PrimaTotal);
-    nf.format(PrimaTotal);
-    BigDecimal divisor = new BigDecimal(MaxCuotas);
-    BigDecimal mod = primaTotal.remainder(divisor);
-    BigDecimal cuociente = primaTotal.divide(divisor, 2, RoundingMode.HALF_UP);
-    
-
-
-
- double cuota= Double.parseDouble(nf.format(cuociente).replace(",", ".")); 
+        NumberFormat nf= NumberFormat.getInstance();
+        nf.setMaximumFractionDigits(2);
+        nf.setMinimumFractionDigits(2);
+        nf.setRoundingMode(RoundingMode.HALF_UP);
+        BigDecimal primaTotal = new BigDecimal(PrimaTotal);
+        nf.format(PrimaTotal);
+        BigDecimal divisor = new BigDecimal(cantidad_cuotas);
+        BigDecimal mod = primaTotal.remainder(divisor);
+        BigDecimal cuociente = primaTotal.divide(divisor, 2, RoundingMode.HALF_UP);
         
+        
+        
+        
+        cuota= Double.parseDouble(nf.format(cuociente).replace(",", "."));
+    }catch(Exception ex){
+        System.out.println("error calcular cuotas "+ex);
+    }
+    
         return cuota;
     }
 
-    public double calcularUltimaCuota(double primaTotalInt, int cuotaMax) {
-        NumberFormat nf= NumberFormat.getInstance();
-nf.setMaximumFractionDigits(2);
-nf.setMinimumFractionDigits(2);
-nf.setRoundingMode(RoundingMode.HALF_UP);
-       BigDecimal cuotas= new BigDecimal(this.calcularCuotas(monto, cuotaMax));
-BigDecimal primaTotal = new BigDecimal(monto);      
-BigDecimal divisor = new BigDecimal(cuotaMax);
-BigDecimal modBig = primaTotal.remainder(divisor);
-BigDecimal valorTotal=cuotas.multiply(new BigDecimal(cuotaMax));
-nf.format(primaTotal);
-nf.format(valorTotal);
-BigDecimal ultimaCuota=primaTotal.subtract(valorTotal);
 
-
-double ultima= Double.parseDouble(nf.format(ultimaCuota).replace(",", ".")); 
-        ultima=ultima+Double.parseDouble(nf.format(cuotas).replace(",", "."));
-        return ultima;
- }
 
     public void editarContacto(String nombre, String rut, String telefonos, String direccion) {
    try{
@@ -697,14 +642,14 @@ double ultima= Double.parseDouble(nf.format(ultimaCuota).replace(",", "."));
 
                 }
                    modelo.addRow(fila);
-      modelo.setValueAt(calcularPendiente((long)modelo.getValueAt(contador, 2)), contador, 5);
+      modelo.setValueAt(calcularPendiente((long)modelo.getValueAt(contador, 2))[0], contador, 5);
                  
                   
 
 //modelo.setValueAt(new ImageIcon("C:\\madremia\\PRogramaLiberty\\descarga\\no-imagen.png"),contador,5);
                   contador++;
                    }
-            
+            conexion.desconectar();
            } catch (SQLException ex) {
                System.out.println("Error al buscar Tabla Cobranza");
                System.out.println(ex);
@@ -1050,67 +995,211 @@ return fila[0].toString();
         return j;
     }
     
-    public String calcularPendiente (long numPoliza){
-     
-        String estado="4";
-        int dias_de_diferencia=0;
-        DateTime  fa = new DateTime();
-            DateTime hoy = new DateTime();
-        try{
-            String sql="SELECT min(fecha_vencimiento) from cobranzas where estado=0 and poliza="+numPoliza;
+      public String[] calcularPendiente (long numPoliza){
+          String[] resultado = new String[4];//estado,fecha y cuota
+          int dias_de_diferencia=0;
+          int company=0;
+          DateTime  fa = new DateTime();
+          DateTime hoy = new DateTime();         
+          String cuotaPendiente="";
+          try{
+              String sql="SELECT min(fecha_vencimiento),cuota,company from cobranzas where estado=0 and poliza="+numPoliza;          
+              conexion.conectar();
+              conexion.sentencia = conexion.conn.prepareStatement(sql);
+              ResultSet objSet=conexion.sentencia.executeQuery(sql);
+           
+
+              while(objSet.next()){
+                  fa=DateTime.parse(objSet.getObject(1).toString());
+                  cuotaPendiente=objSet.getObject(2).toString();
+                  company=Integer.parseInt(objSet.getObject(3).toString());
+                  
+            }
+      
+        conexion.desconectar();
+        
+        
+        dias_de_diferencia=hoy.dayOfYear().getDifference(fa)*-1;
+        resultado[1]=String.valueOf(dias_de_diferencia);
+        resultado[2]=cuotaPendiente;
+        resultado[3]=String.valueOf(fa);
+        DateTime f_anulacion= fa.plusMonths(1);
+        f_anulacion=f_anulacion.withDayOfMonth(25);//HDI SURA comparacion solo para hdi y sura mes siguiente el dia 25
+        
+        if(company==0||company==2){
+            int dias_de_diferencia_anulada=fa.dayOfYear().getDifference(f_anulacion);
             
+            if(dias_de_diferencia<=dias_de_diferencia_anulada){//si esta anulada +-15
+                resultado[1]=String.valueOf(dias_de_diferencia_anulada*-1);
+                resultado[0]="3";//ANULADA
+            }else{
+                if(dias_de_diferencia<0&&dias_de_diferencia>dias_de_diferencia_anulada){//si esta vencida y por anularse
+                    resultado[0]="2";//por anularse vencida
+                    resultado[1]=String.valueOf(dias_de_diferencia_anulada*-1);
+                }else{
+                    if(dias_de_diferencia==0){
+                        resultado[0]="4";//hoy
+                    }else{
+                        if(dias_de_diferencia>0&&dias_de_diferencia<=15){// si esta dentro de lo 15 dias para el vencimiento
+                            resultado[0]="1";//Por vencer
+                        }else{
+                            if(dias_de_diferencia>0&&dias_de_diferencia>15){
+                                resultado[0]="0";//al Dia
+                            }
+                        }
+                    }
+                }
+            }
+        }else{
+            
+            
+            
+            if(dias_de_diferencia<=(-15)){//si esta anulada +-15
+                resultado[0]="3";//ANULADA
+            }else{
+                if(dias_de_diferencia>(-15)&&dias_de_diferencia<0){//si esta vencida y por anularse
+                    resultado[0]="2";//por anularse vencida
+                    
+                }else{
+                    if(dias_de_diferencia==0){
+                        resultado[0]="4";//hoy
+                    }else{
+                        if(dias_de_diferencia>0&&dias_de_diferencia<=15){// si esta dentro de lo 15 dias para el vencimiento
+                            resultado[0]="1";//Por vencer
+                        }else{
+                            if(dias_de_diferencia>0&&dias_de_diferencia>15){
+                                resultado[0]="0";//al Dia
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+          }catch(SQLException | NullPointerException ex){
+        
+            
+            
+         
+            try{
+                conexion.desconectar();
+              String sql="SELECT max(fecha_vencimiento),cuota from cobranzas where estado=1 and poliza="+numPoliza+" or estado=2 and poliza="+numPoliza;          
+              conexion.conectar();
+              conexion.sentencia = conexion.conn.prepareStatement(sql);
+              ResultSet objSet=conexion.sentencia.executeQuery(sql);
+           
+
+              while(objSet.next()){
+                  fa=DateTime.parse(objSet.getObject(1).toString());
+                  cuotaPendiente=objSet.getObject(2).toString();
+                 
+                  
+            }
+              resultado[0]="5";
+          resultado[1]="0";
+        resultado[2]=cuotaPendiente;
+        resultado[3]=String.valueOf(fa);
+         conexion.desconectar();
+              return resultado;
+            }catch(SQLException | NullPointerException es){
+                System.out.println("Error Buscar ultima poliza cobrada o ingresada");
+            
+            }
+        }
+
+
+
+return resultado;
+    }
+
+    public void updatear_poliza_a_cobrado(long numPoliza) {
+   
+    try{
+    String strSql="UPDATE caracola.cobranzas set estado=1 where poliza="+numPoliza;
+    conexion.conectar();
+    conexion.sentencia = conexion.conn.prepareStatement(strSql);
+    conexion.sentencia.execute(strSql);
+    conexion.desconectar();
+    
+    
+    
+    }catch(SQLException ex){
+        System.out.println("Error Updatear Poliza Completa a 'Cobrado'");
+                }
+    
+    
+    
+    }
+
+    public Object[] buscarAseguradoPorPoliza(long numPoliza) {
+        Object [] fila=new Object [5];
+           try{
+          
+          //debe haber un sql que haga todo de aca, pero me da paja buscarlo
+            String sql="select * from contactos a, cobranzas b where a.rut=b.fk_idContacto and b.poliza="+numPoliza;
             conexion.conectar();
             conexion.sentencia = conexion.conn.prepareStatement(sql);
             ResultSet objSet=conexion.sentencia.executeQuery(sql);
-            while(objSet.next()){
-                fa=DateTime.parse(objSet.getObject(1).toString());
-
-                
-            }        
-        }catch(SQLException ex){
-                System.out.println("Error de Calcular Fecha Pendiente Mis Cobranzas");
-                  System.out.println(ex);
-              
+           
+                   while(objSet.next()){
+                for (int i = 0; i < 5; i++) {
+                    fila[i]=objSet.getObject(i+1);
                 }
-   
-dias_de_diferencia=hoy.dayOfYear().getDifference(fa);
-          if(fa.isAfterNow()){
-//entonces todavia no ha vencido, comprobar si quedan menos de 15 dias
-if(dias_de_diferencia<(-15)){
-    //por vencer
-   
- estado="0";
-
-}else{
-
- estado="0";
-}
-}else{
-    if(fa.isBeforeNow()){
-    if(dias_de_diferencia<15&&dias_de_diferencia>=0){
-    estado="2";
-
+                   }
+            
+           } catch (SQLException ex) {
+               System.out.println("Error al buscar Datos Asegurado con numero de poliza");
+               System.out.println(ex);
+           }
+            return fila;
+    }
     
-}else{
-      
-    estado="3";
- 
-    }
-
-}else{
-  
-  estado="4";
-
-
-    }
-     
-            
-            
-   
-     
+    public void exportar_excel(JTable tabla){
         
-    }
-return estado;
+        try {
+            FileOutputStream fileOut = new FileOutputStream("C:\\madremia\\PRogramaLiberty\\descarga\\reporte.xls");
+            HSSFWorkbook workbook = new HSSFWorkbook();
+            HSSFSheet worksheet = workbook.createSheet("POI Worksheet");
+            for (int i = 0; i < tabla.getRowCount(); i++) {
+                // index from 0,0... cell A1 is cell(0,0)
+                HSSFRow row1 = worksheet.createRow((short) 0);
+           
+                HSSFCell cellA1 = row1.createCell((short) 0);
+                cellA1.setCellValue("Hello");
+                HSSFCellStyle cellStyle = workbook.createCellStyle();
+                cellStyle.setFillForegroundColor(HSSFColor.GOLD.index);
+                cellStyle.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+                cellA1.setCellStyle(cellStyle);
+                
+                HSSFCell cellB1 = row1.createCell((short) 1);
+                cellB1.setCellValue("Goodbye");
+                cellStyle = workbook.createCellStyle();
+                cellStyle.setFillForegroundColor(HSSFColor.LIGHT_CORNFLOWER_BLUE.index);
+                cellStyle.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+                cellB1.setCellStyle(cellStyle);
+                
+                HSSFCell cellC1 = row1.createCell((short) 2);
+                cellC1.setCellValue(true);
+                
+                HSSFCell cellD1 = row1.createCell((short) 3);
+                cellD1.setCellValue(new Date());
+                cellStyle = workbook.createCellStyle();
+                cellStyle.setDataFormat(HSSFDataFormat
+                        .getBuiltinFormat("m/d/yy h:mm"));
+                cellD1.setCellStyle(cellStyle);
+            }
+            workbook.write(fileOut);
+            fileOut.flush();
+            fileOut.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        
+        
+        
+        
     }
     
 }
